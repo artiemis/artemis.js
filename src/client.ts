@@ -32,6 +32,10 @@ export class ArtemisClient extends Client {
     });
 
     this.api = api;
+
+    this.on("error", (err) => {
+      log.error("Unhandled Client Error", err);
+    });
   }
 
   async setup() {

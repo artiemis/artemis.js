@@ -7,6 +7,7 @@ import {
 import { client } from "../client";
 import { log } from "../utils/logger";
 import { defineEvent } from ".";
+import { isCommandError, isError } from "../utils/error";
 
 const running = new Map<string, number>();
 const getRunning = (command: string) => running.get(command) ?? 0;
@@ -50,12 +51,19 @@ async function handleChatInputCommand(
 
   try {
     await command.execute(interaction);
-  } catch (error) {
-    log.error(error);
+  } catch (err) {
+    const content = isCommandError(err)
+      ? err.message
+      : isError(err)
+      ? err.message
+      : "An unknown error occurred!";
+
+    if (!isCommandError(err)) log.error("Unhandled Command Error", err);
+
     await interaction[
       interaction.replied || interaction.deferred ? "followUp" : "reply"
     ]({
-      content: "There was an error while executing this command!",
+      content,
     });
   } finally {
     if (command.maxConcurrency) {
@@ -74,8 +82,8 @@ async function handleAutocomplete(interaction: AutocompleteInteraction) {
   if (command.autocomplete) {
     try {
       await command.autocomplete(interaction);
-    } catch (error) {
-      log.error(error);
+    } catch (err) {
+      log.error("Autocomplete Error", err);
     }
   }
 }
