@@ -97,7 +97,7 @@ export default defineCommand({
       return;
     }
 
-    let description = definition.entries
+    const description = definition.entries
       .map((entry) => {
         const name = entry.partOfSpeech;
         const definitions = entry.definitions

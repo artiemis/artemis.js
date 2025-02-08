@@ -1,6 +1,6 @@
 import { Client, Collection, GatewayIntentBits } from "discord.js";
 import { env } from "./env";
-import { ActivityType, API, InteractionContextType } from "@discordjs/core";
+import { ActivityType, API } from "@discordjs/core";
 import { api } from "./api";
 import type { Command } from "./types/command";
 import path from "node:path";

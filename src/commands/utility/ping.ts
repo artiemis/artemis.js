@@ -22,7 +22,7 @@ export default defineCommand({
         )} ms.`,
         withResponse: true,
       })
-    ).resource?.message!;
+    ).resource!.message!;
 
     await msg.edit(
       `${msg.content}\nAPI roundtrip latency is ${inlineCode(

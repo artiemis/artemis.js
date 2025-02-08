@@ -27,7 +27,7 @@ export async function confirmPrompt(
       components: [row],
       withResponse: true,
     })
-  ).resource?.message!;
+  ).resource!.message!;
 
   const confirmation = await msg
     .awaitMessageComponent({

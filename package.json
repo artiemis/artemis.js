@@ -9,12 +9,6 @@
     "sync": "bun run src/scripts/sync.ts",
     "test": "bun run src/scripts/test.ts"
   },
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
   "dependencies": {
     "@discordjs/core": "^2.0.1",
     "@sapphire/discord.js-utilities": "^7.3.2",
@@ -23,5 +17,14 @@
     "ky": "^1.7.4",
     "winston": "^3.17.0",
     "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "@types/bun": "latest",
+    "eslint": "^9.20.0",
+    "typescript-eslint": "^8.23.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
   }
 }
