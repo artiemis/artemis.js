@@ -50,6 +50,8 @@ export default defineCommand({
   async execute(interaction) {
     let term = interaction.options.getString("term", true);
 
+    await interaction.deferReply();
+
     // autocomplete value vs user value
     if (term.startsWith(":")) {
       term = term.slice(1);

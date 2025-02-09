@@ -1,7 +1,8 @@
-import { getDefinitions } from "../utils/wiktionary";
+import { ArtemisClient } from "../client";
+import { env } from "../env";
 
-const definitions = await getDefinitions("appl");
-
-if (!definitions) process.exit(1);
-
-console.dir(definitions, { depth: null });
+const client = new ArtemisClient();
+await client.api.applicationCommands.bulkOverwriteGlobalCommands(
+  env.APPLICATION_ID,
+  []
+);

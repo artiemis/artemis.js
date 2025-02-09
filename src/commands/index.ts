@@ -1,5 +1,5 @@
-import type { Command } from "../types/command";
+import type { Command, CommandBuilder } from "../types/command";
 
-export function defineCommand(command: Command) {
+export function defineCommand<B extends CommandBuilder>(command: Command<B>) {
   return command;
 }

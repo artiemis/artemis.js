@@ -10,6 +10,7 @@ const envSchema = z.object({
     .default("development"),
   DEV_GUILD_ID: z.string(),
   DEV_CHANNEL_ID: z.string(),
+  DEEPL_API_KEY: z.string(),
 });
 
 export const env = envSchema.parse(process.env);

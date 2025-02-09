@@ -1,15 +1,24 @@
 import {
   AutocompleteInteraction,
   ChatInputCommandInteraction,
+  ContextMenuCommandBuilder,
   Events,
   inlineCode,
+  MessageContextMenuCommandInteraction,
   MessageFlags,
+  SlashCommandBuilder,
+  UserContextMenuCommandInteraction,
 } from "discord.js";
 import { client } from "../client";
 import { log } from "../utils/logger";
 import { defineEvent } from ".";
-import { isExplicitCommandError, notifyError } from "../utils/error";
+import {
+  isCombinedError,
+  isExplicitCommandError,
+  notifyError,
+} from "../utils/error";
 import { nanoid } from "../utils/functions";
+import type { Command } from "../types/command";
 
 const running = new Map<string, number>();
 const getRunning = (command: string) => running.get(command) ?? 0;
@@ -18,7 +27,10 @@ export default defineEvent({
   name: Events.InteractionCreate,
 
   async execute(interaction) {
-    if (interaction.isChatInputCommand()) {
+    if (
+      interaction.isChatInputCommand() ||
+      interaction.isContextMenuCommand()
+    ) {
       await handleChatInputCommand(interaction);
     } else if (interaction.isAutocomplete()) {
       await handleAutocomplete(interaction);
@@ -27,9 +39,14 @@ export default defineEvent({
 });
 
 async function handleChatInputCommand(
-  interaction: ChatInputCommandInteraction
+  interaction:
+    | ChatInputCommandInteraction
+    | MessageContextMenuCommandInteraction
+    | UserContextMenuCommandInteraction
 ) {
-  const command = client.commands.get(interaction.commandName);
+  const command = client.commands.get(interaction.commandName) as Command<
+    SlashCommandBuilder | ContextMenuCommandBuilder
+  >;
   if (!command) return;
 
   if (command.isOwnerOnly && interaction.user.id !== client.ownerId) {
@@ -61,7 +78,13 @@ async function handleChatInputCommand(
     if (!isExplicitCommandError(err)) {
       const trace = nanoid();
       content += `\ntrace: ${inlineCode(trace)}`;
-      log.error("Unhandled Command Error", { trace, err });
+      if (isCombinedError(err)) {
+        err.errors.forEach((error) => {
+          log.error("Unhandled Command Error", { trace, err: error });
+        });
+      } else {
+        log.error("Unhandled Command Error", { trace, err });
+      }
       notifyError(trace, err);
     }
 

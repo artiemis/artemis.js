@@ -14,6 +14,6 @@ export default defineCommand({
       flags: MessageFlags.Ephemeral,
     });
 
-    await restart(interaction.token);
+    await restart({ token: interaction.token });
   },
 });

@@ -1,7 +1,9 @@
 import * as cheerio from "cheerio";
+import { execa } from "execa";
 import { customAlphabet } from "nanoid";
 
 export const nanoid = customAlphabet("1234567890abcdef");
+export const shell = execa({ reject: false });
 
 export function noop() {}
 
@@ -50,4 +52,10 @@ export function dedent(parts: TemplateStringsArray, ...values: unknown[]) {
     )
     .join("")
     .replace(/(\n)\s+/g, "$1");
+}
+
+export function lazy<T>(cb: () => T) {
+  let defaultValue: T;
+
+  return () => (defaultValue ??= cb());
 }

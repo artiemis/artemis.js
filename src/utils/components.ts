@@ -43,6 +43,6 @@ export async function confirmPrompt(
       });
     });
 
-  msg.delete();
+  interaction.deleteReply();
   return confirmation?.customId === "confirm";
 }
