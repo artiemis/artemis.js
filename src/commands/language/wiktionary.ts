@@ -40,7 +40,7 @@ export default defineCommand({
     const choices = suggestions
       .map((suggestion) => ({
         name: suggestion.title,
-        value: suggestion.key,
+        value: `:${suggestion.key}`,
       }))
       .slice(0, 25);
 
@@ -48,7 +48,18 @@ export default defineCommand({
   },
 
   async execute(interaction) {
-    const term = interaction.options.getString("term", true);
+    let term = interaction.options.getString("term", true);
+
+    // autocomplete value vs user value
+    if (term.startsWith(":")) {
+      term = term.slice(1);
+    } else {
+      const suggestions = await getSuggestions(term);
+      if (!suggestions) {
+        abort("No definitions found");
+      }
+      term = suggestions[0].key;
+    }
 
     const definitions = await getDefinitions(term);
     if (!definitions?.length) {
