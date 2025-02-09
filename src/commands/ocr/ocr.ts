@@ -30,7 +30,7 @@ export function buildOcrPayload(
       files: [
         {
           name: "ocr.txt",
-          attachment: text,
+          attachment: Buffer.from(text),
         },
         ...(attachment ? [attachment] : []),
       ],

@@ -59,7 +59,9 @@ export async function translateImpl(
       files: [
         {
           name: `${displaySource}-${displayTarget}.txt`,
-          attachment: `--- From ${displaySource} to ${displayTarget} ---\n${translatedText}`,
+          attachment: Buffer.from(
+            `--- From ${displaySource} to ${displayTarget} ---\n${translatedText}`
+          ),
         },
         ...(attachment ? [attachment] : []),
       ],
