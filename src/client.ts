@@ -1,7 +1,6 @@
-import { Client, Collection, GatewayIntentBits } from "discord.js";
+import { Client, Collection, GatewayIntentBits, REST } from "discord.js";
 import { env } from "./env";
 import { ActivityType, API } from "@discordjs/core";
-import { api } from "./api";
 import type { Command } from "./types/command";
 import path from "node:path";
 import fs from "node:fs/promises";
@@ -31,7 +30,8 @@ export class ArtemisClient extends Client {
       },
     });
 
-    this.api = api;
+    const rest = new REST().setToken(env.DISCORD_TOKEN);
+    this.api = new API(rest);
 
     this.on("error", (err) => {
       log.error("Unhandled Client Error", err);

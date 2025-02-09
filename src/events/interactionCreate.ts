@@ -8,7 +8,7 @@ import {
 import { client } from "../client";
 import { log } from "../utils/logger";
 import { defineEvent } from ".";
-import { isCommandError, notifyError } from "../utils/error";
+import { isExplicitCommandError, notifyError } from "../utils/error";
 import { nanoid } from "../utils/functions";
 
 const running = new Map<string, number>();
@@ -54,11 +54,11 @@ async function handleChatInputCommand(
   try {
     await command.execute(interaction);
   } catch (err) {
-    let content = isCommandError(err)
+    let content = isExplicitCommandError(err)
       ? err.message
       : "An unknown error occurred!";
 
-    if (!isCommandError(err)) {
+    if (!isExplicitCommandError(err)) {
       const trace = nanoid();
       content += `\ntrace: ${inlineCode(trace)}`;
       log.error("Unhandled Command Error", { trace, err });

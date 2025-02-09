@@ -1,6 +1,7 @@
 import { MessageFlags, SlashCommandBuilder } from "discord.js";
 import { client } from "../../client";
 import { defineCommand } from "..";
+import { abort } from "../../utils/error";
 
 export default defineCommand({
   data: new SlashCommandBuilder()
@@ -13,10 +14,7 @@ export default defineCommand({
     const counts = await client.syncCommands();
 
     if (!counts) {
-      await interaction.followUp({
-        content: "No commands to sync",
-      });
-      return;
+      abort("No commands to sync");
     }
 
     const { guildCount, globalCount } = counts;

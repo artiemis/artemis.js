@@ -1,6 +1,7 @@
 import { inlineCode, SlashCommandBuilder } from "discord.js";
 import { client } from "../../client";
 import { defineCommand } from "..";
+import { abort } from "../../utils/error";
 
 export default defineCommand({
   data: new SlashCommandBuilder()
@@ -9,10 +10,9 @@ export default defineCommand({
 
   async execute(interaction) {
     if (client.ws.ping < 1) {
-      await interaction.reply(
+      abort(
         ":ping_pong: Pong!\nThe bot is still starting up, accurate latency will be available shortly."
       );
-      return;
     }
 
     const msg = (

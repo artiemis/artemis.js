@@ -4,6 +4,7 @@ import { getDefinitions, getSuggestions } from "../../utils/wiktionary";
 import { stripHtml } from "../../utils/functions";
 import { PaginatedMessage } from "@sapphire/discord.js-utilities";
 import { LRUCache } from "lru-cache";
+import { abort } from "../../utils/error";
 
 const titleCache = new LRUCache<string, string>({ max: 100 });
 
@@ -51,10 +52,7 @@ export default defineCommand({
 
     const definitions = await getDefinitions(term);
     if (!definitions?.length) {
-      await interaction.reply({
-        content: "No definitions found",
-      });
-      return;
+      abort("No definitions found");
     }
 
     const title = titleCache.get(term) ?? term;

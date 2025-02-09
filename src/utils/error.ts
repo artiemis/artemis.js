@@ -2,10 +2,16 @@ import { codeBlock, type TextChannel } from "discord.js";
 import { client } from "../client";
 import { env } from "../env";
 
-export class CommandError extends Error {}
+export class ExplicitCommandError extends Error {}
 
-export function isCommandError(error: any): error is CommandError {
-  return error instanceof CommandError;
+export function abort(message: string): never {
+  throw new ExplicitCommandError(message);
+}
+
+export function isExplicitCommandError(
+  error: any
+): error is ExplicitCommandError {
+  return error instanceof ExplicitCommandError;
 }
 
 export async function notifyError(trace: string, error: any) {
