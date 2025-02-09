@@ -1,12 +1,11 @@
-import {
-  bold,
-  EmbedBuilder,
-  inlineCode,
-  SlashCommandBuilder,
-} from "discord.js";
+import { bold, inlineCode, SlashCommandBuilder } from "discord.js";
 import { defineCommand } from "..";
-import { getDefinitions } from "../../utils/wiktionary";
+import { getDefinitions, getSuggestions } from "../../utils/wiktionary";
 import { stripHtml } from "../../utils/functions";
+import { PaginatedMessage } from "@sapphire/discord.js-utilities";
+import { LRUCache } from "lru-cache";
+
+const titleCache = new LRUCache<string, string>({ max: 100 });
 
 export default defineCommand({
   data: new SlashCommandBuilder()
@@ -21,48 +20,26 @@ export default defineCommand({
     ),
 
   async autocomplete(interaction) {
-    let language: string | undefined;
-    let term = interaction.options.getFocused().trim();
+    const term = interaction.options.getFocused().trim();
     if (term.length < 3) {
       await interaction.respond([]);
       return;
     }
 
-    const parsed = term.split(":");
-    if (parsed.length === 2) {
-      term = parsed[0].trim();
-      language = parsed[1].trim();
-      if (!language) {
-        await interaction.respond([]);
-        return;
-      }
-    }
-
-    const definitions = await getDefinitions(term);
-    if (!definitions) {
+    const suggestions = await getSuggestions(term);
+    if (!suggestions) {
       await interaction.respond([]);
       return;
     }
 
-    if (language) {
-      const choices = definitions
-        .filter((definition) =>
-          definition.language.toLowerCase().startsWith(language.toLowerCase())
-        )
-        .map((definition) => ({
-          name: `${term} (${definition.language})`,
-          value: `:${term}:${definition.languageCode}:`,
-        }))
-        .slice(0, 25);
+    suggestions.forEach((suggestion) => {
+      titleCache.set(suggestion.key, suggestion.title);
+    });
 
-      await interaction.respond(choices);
-      return;
-    }
-
-    const choices = definitions
-      .map((definition) => ({
-        name: `${term} (${definition.language})`,
-        value: `:${term}:${definition.languageCode}:`,
+    const choices = suggestions
+      .map((suggestion) => ({
+        name: suggestion.title,
+        value: suggestion.key,
       }))
       .slice(0, 25);
 
@@ -70,62 +47,56 @@ export default defineCommand({
   },
 
   async execute(interaction) {
-    let term = interaction.options.getString("term", true);
-    let languageCode: string | undefined;
-
-    const parsed = term.match(/^:(?<term>.+):(?<languageCode>.+):$/);
-    if (parsed?.groups) {
-      term = parsed.groups.term;
-      languageCode = parsed.groups.languageCode;
-    }
+    const term = interaction.options.getString("term", true);
 
     const definitions = await getDefinitions(term);
-    if (!definitions) {
+    if (!definitions?.length) {
       await interaction.reply({
         content: "No definitions found",
       });
       return;
     }
 
-    const definition = languageCode
-      ? definitions.find((def) => def.languageCode === languageCode)
-      : definitions[0];
-    if (!definition) {
-      await interaction.reply({
-        content: "No definitions found",
-      });
-      return;
-    }
+    const title = titleCache.get(term) ?? term;
+    const msg = new PaginatedMessage();
+    msg.setSelectMenuOptions((i) => ({
+      label: definitions[i - 1].language,
+      description: `Page ${i}`,
+    }));
 
-    const description = definition.entries
-      .map((entry) => {
-        const name = entry.partOfSpeech;
-        const definitions = entry.definitions
-          .filter((def) => def.definition)
-          .map((def, i) => {
-            const prefix = inlineCode(`${i + 1}.`);
-            const definition = stripHtml(def.definition);
-            return `${prefix} ${definition.trim()}`;
+    definitions.forEach((definition) => {
+      const description = definition.entries
+        .map((entry) => {
+          const name = entry.partOfSpeech;
+          const definitions = entry.definitions
+            .filter((def) => def.definition)
+            .map((def, i) => {
+              const prefix = inlineCode(`${i + 1}.`);
+              const definition = stripHtml(def.definition);
+              return `${prefix} ${definition.trim()}`;
+            })
+            .join("\n");
+
+          return `${bold(name)}\n${definitions}`;
+        })
+        .join("\n\n");
+
+      msg.addPageEmbed((embed) =>
+        embed
+          .setAuthor({
+            name: `Wiktionary - ${definition.language}`,
+            iconURL:
+              "https://en.wiktionary.org/static/apple-touch/wiktionary/en.png",
+            url: `https://${
+              definition.languageCode
+            }.wiktionary.org/wiki/${encodeURIComponent(term)}`,
           })
-          .join("\n");
+          .setTitle(title)
+          .setColor(0xfefefe)
+          .setDescription(description)
+      );
+    });
 
-        return `${bold(name)}\n${definitions}`;
-      })
-      .join("\n\n");
-
-    const embed = new EmbedBuilder()
-      .setAuthor({
-        name: `Wiktionary - ${definition.language}`,
-        iconURL:
-          "https://en.wiktionary.org/static/apple-touch/wiktionary/en.png",
-        url: `https://${
-          definition.languageCode
-        }.wiktionary.org/wiki/${encodeURIComponent(term)}`,
-      })
-      .setTitle(term)
-      .setColor(0xfefefe)
-      .setDescription(description);
-
-    await interaction.reply({ embeds: [embed] });
+    msg.run(interaction);
   },
 });

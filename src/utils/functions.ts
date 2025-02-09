@@ -1,4 +1,7 @@
 import * as cheerio from "cheerio";
+import { customAlphabet } from "nanoid";
+
+export const nanoid = customAlphabet("1234567890abcdef");
 
 export function noop() {}
 
