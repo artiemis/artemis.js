@@ -19,8 +19,8 @@ export default defineCommand({
 
     const { guildCount, globalCount } = counts;
 
-    await interaction.followUp({
-      content: `Successfully synced ${guildCount} guild and ${globalCount} global application commands`,
-    });
+    await interaction.followUp(
+      `Successfully synced ${guildCount} guild and ${globalCount} global application commands`
+    );
   },
 });
