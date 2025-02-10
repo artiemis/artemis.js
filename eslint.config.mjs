@@ -15,5 +15,8 @@ export default tseslint.config(
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-explicit-any": "off",
     },
+  },
+  {
+    ignores: ["ecosystem.config.cjs"],
   }
 );

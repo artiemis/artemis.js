@@ -5,17 +5,20 @@ import type {
   MessageContextMenuCommandInteraction,
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
+  SlashCommandSubcommandsOnlyBuilder,
   UserContextMenuCommandInteraction,
 } from "discord.js";
 
 export type CommandBuilder =
   | SlashCommandBuilder
+  | SlashCommandSubcommandsOnlyBuilder
   | SlashCommandOptionsOnlyBuilder
   | ContextMenuCommandBuilder;
 
 type InferInteraction<B> = B extends
   | SlashCommandBuilder
   | SlashCommandOptionsOnlyBuilder
+  | SlashCommandSubcommandsOnlyBuilder
   ? ChatInputCommandInteraction
   : B extends ContextMenuCommandBuilder
   ? MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction
