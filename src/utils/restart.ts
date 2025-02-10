@@ -8,7 +8,7 @@ import { silently } from "./functions";
 import { client } from "../client";
 import { env } from "../env";
 import { readFile, rm, writeFile } from "node:fs/promises";
-import { log } from "./logger";
+import { logger } from "./logger";
 
 type RestartState = {
   token?: string;
@@ -19,7 +19,7 @@ type RestartState = {
 };
 
 export async function restart(state: RestartState) {
-  log.info("Shutting down...");
+  logger.info("Shutting down...");
 
   await writeFile("./data/temp/restart", JSON.stringify(state));
 

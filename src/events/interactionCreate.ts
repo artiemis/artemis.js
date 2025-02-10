@@ -10,13 +10,9 @@ import {
   UserContextMenuCommandInteraction,
 } from "discord.js";
 import { client } from "../client";
-import { log } from "../utils/logger";
+import { logger } from "../utils/logger";
 import { defineEvent } from ".";
-import {
-  isCombinedError,
-  isExplicitCommandError,
-  notifyError,
-} from "../utils/error";
+import { isExplicitCommandError, notifyError } from "../utils/error";
 import { nanoid } from "../utils/functions";
 import type { Command } from "../types/command";
 
@@ -78,13 +74,7 @@ async function handleChatInputCommand(
     if (!isExplicitCommandError(err)) {
       const trace = nanoid();
       content += `\ntrace: ${inlineCode(trace)}`;
-      if (isCombinedError(err)) {
-        err.errors.forEach((error) => {
-          log.error("Unhandled Command Error", { trace, err: error });
-        });
-      } else {
-        log.error("Unhandled Command Error", { trace, err });
-      }
+      logger.error({ trace, err });
       notifyError(trace, err);
     }
 
@@ -111,7 +101,7 @@ async function handleAutocomplete(interaction: AutocompleteInteraction) {
     try {
       await command.autocomplete(interaction);
     } catch (err) {
-      log.error("Autocomplete Error", err);
+      logger.error(err);
     }
   }
 }

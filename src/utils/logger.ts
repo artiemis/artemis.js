@@ -1,11 +1,12 @@
-import { createLogger, format, transports } from "winston";
+import pino from "pino";
 import { DEV } from "./constants";
-const { combine, simple, errors, prettyPrint } = format;
 
-export const log = createLogger({
+export const logger = pino({
   level: "info",
-  format: DEV
-    ? combine(errors({ stack: true }), prettyPrint({ colorize: true }))
-    : combine(errors({ stack: true }), simple()),
-  transports: [new transports.Console()],
+  transport: DEV
+    ? {
+        target: "pino-pretty",
+      }
+    : undefined,
+  base: undefined,
 });

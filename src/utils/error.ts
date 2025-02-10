@@ -14,10 +14,6 @@ export function isExplicitCommandError(
   return error instanceof ExplicitCommandError;
 }
 
-export function isCombinedError(error: any): error is { errors: any[] } {
-  return typeof error === "object" && "errors" in error;
-}
-
 export async function notifyError(trace: string, error: any) {
   return (client.channels.cache.get(env.DEV_CHANNEL_ID) as TextChannel).send({
     content: trace,

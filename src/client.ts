@@ -4,7 +4,7 @@ import { ActivityType, API } from "@discordjs/core";
 import type { Command } from "./types/command";
 import path from "node:path";
 import fs from "node:fs/promises";
-import { log } from "./utils/logger";
+import { logger } from "./utils/logger";
 import { pluralize } from "./utils/functions";
 import { DEV } from "./utils/constants";
 
@@ -34,7 +34,7 @@ export class ArtemisClient extends Client {
     this.api = new API(rest);
 
     this.on("error", (err) => {
-      log.error("Unhandled Client Error", err);
+      logger.error(err);
     });
   }
 
@@ -71,7 +71,9 @@ export class ArtemisClient extends Client {
     }
 
     await Promise.all(promises);
-    log.info(`Loaded ${pluralize(this.commands.size, "application command")}`);
+    logger.info(
+      `Loaded ${pluralize(this.commands.size, "application command")}`
+    );
   }
 
   async registerEvents() {
@@ -85,12 +87,12 @@ export class ArtemisClient extends Client {
       this[event.once ? "once" : "on"](event.name, event.execute);
     }
 
-    log.info(`Registered ${pluralize(files.length, "event")}`);
+    logger.info(`Registered ${pluralize(files.length, "event")}`);
   }
 
   async syncCommands() {
     if (!this.commands.size) {
-      log.warn("No commands were loaded, skipping registration");
+      logger.warn("No commands were loaded, skipping registration");
       return;
     }
 
@@ -124,7 +126,7 @@ export class ArtemisClient extends Client {
         .then((res) => (globalCount += res.length));
     }
 
-    log.info(
+    logger.info(
       `Successfully synced ${guildCount} guild and ${globalCount} global application commands`
     );
     return { guildCount, globalCount };

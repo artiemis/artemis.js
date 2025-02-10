@@ -1,9 +1,9 @@
 import { client } from "../client";
-import { log } from "../utils/logger";
+import { logger } from "../utils/logger";
 
 async function main() {
   await client.loadCommands();
   await client.syncCommands();
 }
 
-main().catch(log.error);
+main().catch(logger.error);
