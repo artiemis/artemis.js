@@ -7,7 +7,8 @@
     "dev": "bun --watch src/index.ts",
     "start": "bun run src/index.ts",
     "sync": "bun run src/scripts/sync.ts",
-    "test": "bun run src/scripts/test.ts"
+    "test": "bun run src/scripts/test.ts",
+    "deploy": "src/scripts/deploy.sh"
   },
   "dependencies": {
     "@discordjs/core": "^2.0.1",
