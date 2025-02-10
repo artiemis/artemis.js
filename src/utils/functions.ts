@@ -51,7 +51,7 @@ export function dedent(parts: TemplateStringsArray, ...values: unknown[]) {
       i < values.length ? [part, String(values[i])] : [part]
     )
     .join("")
-    .replace(/(\n)\s+/g, "$1");
+    .replace(/^ +/gm, "");
 }
 
 export function lazy<T>(cb: () => T) {

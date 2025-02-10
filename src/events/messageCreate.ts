@@ -11,10 +11,29 @@ export default defineEvent({
 
     const command = message.content.match(/^\$[a-zA-Z]+$/);
     if (command) {
+      if (
+        ["lens", "lenstr", "deepl"].includes(command[0].slice(1)) &&
+        message.reference
+      ) {
+        await message.reply(
+          dedent`The bot has migrated to application commands!
+          If you wish to OCR and/or translate someone else's message, please select the appropriate action from the context menu on their message.
+
+          Desktop: Right click on the message and select the action you wish to perform.
+          Mobile: Long press on the message and select the action you wish to perform.
+          
+          https://files.catbox.moe/0bo10j.png`
+        );
+        return;
+      }
+
       await message.reply(
         dedent`The bot has migrated to slash commands!
+        
         Start typing \`/\` to see the available commands.
-        For example: \`/${command[0].slice(1)}\``
+        For example: \`/${command[0].slice(1)}\`
+        
+        https://files.catbox.moe/594jzd.png`
       );
       return;
     }
