@@ -8,7 +8,7 @@ import {
 import { defineCommand } from "..";
 import { downloadFile } from "../../utils/http";
 import { abort } from "../../utils/error";
-import { yandexOcr } from "../../utils/ocr";
+import { yandexOcr } from "../../utils/yandex";
 import sharp from "sharp";
 
 export function buildOcrPayload(

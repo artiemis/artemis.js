@@ -1,8 +1,3 @@
-import { ArtemisClient } from "../client";
-import { env } from "../env";
+import { getWikipediaEditions } from "../utils/wikipedia";
 
-const client = new ArtemisClient();
-await client.api.applicationCommands.bulkOverwriteGlobalCommands(
-  env.APPLICATION_ID,
-  []
-);
+console.log(await getWikipediaEditions());

@@ -52,7 +52,6 @@ export default defineCommand({
 
     await interaction.deferReply();
 
-    // autocomplete value vs user value
     if (term.startsWith(":")) {
       term = term.slice(1);
     } else {
