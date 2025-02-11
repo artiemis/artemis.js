@@ -1,8 +1,8 @@
 import { ApplicationCommandType, ContextMenuCommandBuilder } from "discord.js";
 import { defineCommand } from "..";
-import { abort } from "../../utils/error";
 import { translateImpl } from "../language/translate";
 import { ocrImpl } from "./ocr";
+import { getImageFromAttachmentOrString } from "../../utils/functions";
 
 export default defineCommand({
   data: new ContextMenuCommandBuilder()
@@ -13,16 +13,14 @@ export default defineCommand({
     if (!interaction.isMessageContextMenuCommand()) return;
 
     const attachment = interaction.targetMessage.attachments.first();
-    if (!attachment) {
-      abort("No attachment found");
-    }
-    if (!attachment.contentType?.startsWith("image/")) {
-      abort("The file must be an image!");
-    }
+    const imageUrl = getImageFromAttachmentOrString(
+      attachment,
+      interaction.targetMessage.content
+    );
 
     await interaction.deferReply();
 
-    const { text } = await ocrImpl(attachment);
+    const { text } = await ocrImpl(imageUrl);
     const payload = await translateImpl(text, null, "en-US");
     await interaction.editReply(payload);
   },

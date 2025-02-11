@@ -10,6 +10,7 @@ import {
   translateImpl,
 } from "../language/translate";
 import { ocrImpl } from "./ocr";
+import { getImageFromAttachmentOrString } from "../../utils/functions";
 
 export default defineCommand({
   data: new SlashCommandBuilder()
@@ -18,10 +19,10 @@ export default defineCommand({
       "OCR an image using Yandex and translate the result using DeepL"
     )
     .addAttachmentOption((option) =>
-      option
-        .setName("image")
-        .setDescription("The image to OCR")
-        .setRequired(true)
+      option.setName("image").setDescription("The image to OCR")
+    )
+    .addStringOption((option) =>
+      option.setName("url").setDescription("The image URL to OCR")
     )
     .addStringOption((option) =>
       option
@@ -39,13 +40,13 @@ export default defineCommand({
   autocomplete: translateAutocompleteImpl,
 
   async execute(interaction) {
-    const attachment = interaction.options.getAttachment("image", true);
+    const attachment = interaction.options.getAttachment("image");
+    const url = interaction.options.getString("url");
+
     const source = interaction.options.getString("source") ?? null;
     const target = interaction.options.getString("target") ?? "en-US";
 
-    if (!attachment.contentType?.startsWith("image/")) {
-      abort("The file must be an image!");
-    }
+    const imageUrl = getImageFromAttachmentOrString(attachment, url);
 
     await interaction.deferReply();
 
@@ -56,8 +57,8 @@ export default defineCommand({
       abort("Target language not supported");
     }
 
-    const { text } = await ocrImpl(attachment);
-    const payload = await translateImpl(text, source, target, attachment);
+    const { text } = await ocrImpl(imageUrl);
+    const payload = await translateImpl(text, source, target, imageUrl);
     await interaction.editReply(payload);
   },
 });

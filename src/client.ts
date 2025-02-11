@@ -1,4 +1,10 @@
-import { Client, Collection, GatewayIntentBits, REST } from "discord.js";
+import {
+  Client,
+  Collection,
+  GatewayIntentBits,
+  Partials,
+  REST,
+} from "discord.js";
 import { env } from "./env";
 import { ActivityType, API } from "@discordjs/core";
 import type { Command } from "./types/command";
@@ -28,6 +34,7 @@ export class ArtemisClient extends Client {
       presence: {
         activities: [{ name: "🩷", type: ActivityType.Custom }],
       },
+      partials: [Partials.Channel],
     });
 
     const rest = new REST().setToken(env.DISCORD_TOKEN);

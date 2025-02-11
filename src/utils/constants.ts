@@ -8,6 +8,9 @@ export const USER_AGENT = `artemis (discord.js ${version})`;
 export const FAKE_USER_AGENT =
   "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0";
 
+export const URL_REGEX =
+  /\bhttps?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)\b/gi;
+
 export const GOOD_BOT_EMOJIS = [
   "<:teehee:825098257742299136>",
   "<:teehee2:825098258741067787>",

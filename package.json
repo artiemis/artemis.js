@@ -7,7 +7,7 @@
     "dev": "bun --watch src/index.ts",
     "start": "bun run src/index.ts",
     "sync": "bun run src/scripts/sync.ts",
-    "test": "bun run src/scripts/test.ts",
+    "sandbox": "bun run src/scripts/sandbox.ts",
     "deploy": "src/scripts/deploy.sh"
   },
   "dependencies": {

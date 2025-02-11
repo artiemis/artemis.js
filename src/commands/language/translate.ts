@@ -1,6 +1,6 @@
 import {
-  Attachment,
   AutocompleteInteraction,
+  hyperlink,
   SlashCommandBuilder,
   type InteractionEditReplyOptions,
 } from "discord.js";
@@ -39,7 +39,7 @@ export async function translateImpl(
   text: string,
   source: string | null,
   target: string,
-  attachment?: Attachment
+  imageUrl?: string
 ): Promise<InteractionEditReplyOptions> {
   const {
     text: translatedText,
@@ -56,6 +56,7 @@ export async function translateImpl(
 
   if (translatedText.length > 4096) {
     return {
+      content: imageUrl ? `${hyperlink("Image", imageUrl)}\n\n` : undefined,
       files: [
         {
           name: `${displaySource}-${displayTarget}.txt`,
@@ -63,7 +64,6 @@ export async function translateImpl(
             `--- From ${displaySource} to ${displayTarget} ---\n${translatedText}`
           ),
         },
-        ...(attachment ? [attachment] : []),
       ],
     };
   }
@@ -74,6 +74,7 @@ export async function translateImpl(
         title: `From ${displaySource} to ${displayTarget}`,
         description: translatedText,
         color: 0x0f2b46,
+        ...(imageUrl ? { image: { url: imageUrl } } : {}),
         author: {
           name: "DeepL",
           icon_url: "https://www.google.com/s2/favicons?domain=deepl.com&sz=64",
@@ -83,7 +84,6 @@ export async function translateImpl(
         },
       },
     ],
-    files: attachment ? [attachment] : [],
   };
 }
 

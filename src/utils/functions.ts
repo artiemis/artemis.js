@@ -1,6 +1,9 @@
 import * as cheerio from "cheerio";
 import { execa } from "execa";
 import { customAlphabet } from "nanoid";
+import { URL_REGEX } from "./constants";
+import type { Attachment } from "discord.js";
+import { abort } from "./error";
 
 export const nanoid = customAlphabet("1234567890abcdef");
 export const shell = execa({ reject: false });
@@ -62,4 +65,30 @@ export function lazy<T>(cb: () => T) {
 
 export function trim(str: string, maxLength: number) {
   return str.length > maxLength ? str.slice(0, maxLength) + "…" : str;
+}
+
+export function findUrls(text: string) {
+  return text.match(URL_REGEX) ?? [];
+}
+
+export function findFirstUrl(text: string) {
+  return findUrls(text)[0];
+}
+
+export function getImageFromAttachmentOrString(
+  attachment?: Attachment | null,
+  str?: string | null
+) {
+  if (attachment) {
+    if (!attachment.contentType?.startsWith("image/")) {
+      abort("The file must be an image!");
+    }
+    return attachment.url;
+  } else if (str) {
+    const match = findFirstUrl(str);
+    if (!match) abort("The URL is invalid!");
+    return match;
+  } else {
+    abort("You must provide an image or an image URL!");
+  }
 }
