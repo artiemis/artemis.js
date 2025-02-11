@@ -27,7 +27,7 @@ export function buildOcrPayload(
     try {
       return (
         new Intl.DisplayNames(["en"], { type: "language" }).of(language) ??
-        "unknown"
+        "Unknown"
       );
     } catch {
       return "Unknown";
@@ -54,12 +54,15 @@ export function buildOcrPayload(
       {
         description: text,
         color: model === "yandex" ? 0xffdb4d : 0x4285f4,
-        fields: [
-          {
-            name: "Detected language",
-            value: languageName,
-          },
-        ],
+        fields:
+          text !== "No text detected"
+            ? [
+                {
+                  name: "Detected language",
+                  value: languageName,
+                },
+              ]
+            : [],
         ...(imageUrl ? { image: { url: imageUrl } } : {}),
         author: {
           name: capitalize(model),
