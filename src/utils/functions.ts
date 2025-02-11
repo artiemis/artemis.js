@@ -7,6 +7,7 @@ import { abort } from "./error";
 
 export const nanoid = customAlphabet("1234567890abcdef");
 export const shell = execa({ reject: false });
+const languageNames = new Intl.DisplayNames(["en"], { type: "language" });
 
 export function noop() {}
 
@@ -94,5 +95,13 @@ export function getImageFromAttachmentOrString(
     return match;
   } else {
     abort("You must provide an image or an image URL!");
+  }
+}
+
+export function languageCodeToName(code: string) {
+  try {
+    return languageNames.of(code);
+  } catch {
+    return undefined;
   }
 }

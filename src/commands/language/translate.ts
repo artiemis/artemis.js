@@ -11,12 +11,11 @@ import {
   getTargetLanguages,
   isSourceLanguageSupported,
   isTargetLanguageSupported,
-  languageCodeToName,
   translate,
 } from "../../utils/deepl";
 import { abort } from "../../utils/error";
 import type { OCRResult } from "../../types/ocr";
-import { capitalize } from "../../utils/functions";
+import { capitalize, languageCodeToName } from "../../utils/functions";
 
 export async function translateAutocompleteImpl(
   interaction: AutocompleteInteraction
@@ -55,8 +54,8 @@ export async function translateImpl(
     target,
   });
 
-  const displaySource = await languageCodeToName(detectedSourceLang);
-  const displayTarget = await languageCodeToName(target);
+  const displaySource = languageCodeToName(detectedSourceLang);
+  const displayTarget = languageCodeToName(target);
 
   if (translatedText.length > 4096) {
     return {

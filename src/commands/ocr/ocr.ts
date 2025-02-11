@@ -12,6 +12,7 @@ import sharp from "sharp";
 import {
   capitalize,
   getImageFromAttachmentOrString,
+  languageCodeToName,
   run,
 } from "../../utils/functions";
 import { lensOcr } from "../../utils/lens";
@@ -23,16 +24,7 @@ export function buildOcrPayload(
   model: OCRResult["model"],
   imageUrl?: string
 ): InteractionEditReplyOptions {
-  const languageName = run(() => {
-    try {
-      return (
-        new Intl.DisplayNames(["en"], { type: "language" }).of(language) ??
-        "Unknown"
-      );
-    } catch {
-      return "Unknown";
-    }
-  });
+  const languageName = languageCodeToName(language) ?? "Unknown";
 
   if (text.length > 4096) {
     return {

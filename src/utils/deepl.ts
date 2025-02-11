@@ -36,22 +36,18 @@ export async function getLanguages() {
   return (await getSourceLanguages()).concat(await getTargetLanguages());
 }
 
-export async function languageCodeToName(code: string) {
-  return (await getLanguages()).find((l) => l.code === code)?.name;
-}
-
 export async function isSourceLanguageSupported(code: string) {
+  const sourceLanguages = await getSourceLanguages();
   return (
-    (await getSourceLanguages()).find(
-      (l) => l.code.toLowerCase() === code.toLowerCase()
-    ) !== undefined
+    sourceLanguages.find((l) => l.code.toLowerCase() === code.toLowerCase()) !==
+    undefined
   );
 }
 
 export async function isTargetLanguageSupported(code: string) {
+  const targetLanguages = await getTargetLanguages();
   return (
-    (await getTargetLanguages()).find(
-      (l) => l.code.toLowerCase() === code.toLowerCase()
-    ) !== undefined
+    targetLanguages.find((l) => l.code.toLowerCase() === code.toLowerCase()) !==
+    undefined
   );
 }
