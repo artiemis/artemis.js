@@ -9,11 +9,14 @@ export default defineEvent({
   once: true,
 
   async execute(client) {
-    logger.info("Logged in", {
-      tag: client.user.tag,
-      id: client.user.id,
-      env: env.NODE_ENV,
-    });
+    logger.info(
+      {
+        tag: client.user.tag,
+        id: client.user.id,
+        env: env.NODE_ENV,
+      },
+      "Logged in"
+    );
 
     await maybeSendRestarted();
   },

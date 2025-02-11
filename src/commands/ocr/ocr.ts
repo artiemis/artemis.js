@@ -1,5 +1,4 @@
 import {
-  codeBlock,
   hyperlink,
   inlineCode,
   SlashCommandBuilder,
@@ -10,32 +9,36 @@ import { downloadFile } from "../../utils/http";
 import { abort } from "../../utils/error";
 import { yandexOcr } from "../../utils/yandex";
 import sharp from "sharp";
-import { getImageFromAttachmentOrString, run } from "../../utils/functions";
+import {
+  capitalize,
+  getImageFromAttachmentOrString,
+  run,
+} from "../../utils/functions";
+import { lensOcr } from "../../utils/lens";
+import type { OCRResult } from "../../types/ocr";
 
 export function buildOcrPayload(
   text: string,
-  detected_lang: string,
+  language: string,
+  model: OCRResult["model"],
   imageUrl?: string
 ): InteractionEditReplyOptions {
   const languageName = run(() => {
     try {
       return (
-        new Intl.DisplayNames(["en"], { type: "language" }).of(detected_lang) ??
+        new Intl.DisplayNames(["en"], { type: "language" }).of(language) ??
         "unknown"
       );
     } catch {
-      return "unknown";
+      return "Unknown";
     }
   });
 
-  const content =
-    `Detected language: ${inlineCode(languageName)}\n${codeBlock(text)}` +
-    (imageUrl ? `\n${hyperlink("Image", imageUrl)}` : "");
-
-  if (content.length > 4096) {
+  if (text.length > 4096) {
     return {
       content:
         `Detected language: ${inlineCode(languageName)}` +
+        `\nOCR: ${inlineCode(capitalize(model))}` +
         (imageUrl ? `\n${hyperlink("Image", imageUrl)}` : ""),
       files: [
         {
@@ -49,19 +52,18 @@ export function buildOcrPayload(
   return {
     embeds: [
       {
-        description: codeBlock(text),
-        color: 0xffdb4d,
+        description: text,
+        color: model === "yandex" ? 0xffdb4d : 0x4285f4,
         fields: [
           {
             name: "Detected language",
-            value: inlineCode(languageName),
+            value: languageName,
           },
         ],
         ...(imageUrl ? { image: { url: imageUrl } } : {}),
         author: {
-          name: "Yandex",
-          icon_url:
-            "https://www.google.com/s2/favicons?domain=yandex.com&sz=64",
+          name: capitalize(model),
+          icon_url: `https://www.google.com/s2/favicons?domain=${model}.com&sz=64`,
         },
       },
     ],
@@ -86,7 +88,10 @@ export async function ocrImpl(url: string) {
     .jpeg({ quality: 90 })
     .toBuffer();
 
-  const result = await yandexOcr(compressed, type.mime);
+  const result = await lensOcr(compressed)
+    .catch(() => yandexOcr(compressed, type.mime))
+    .catch(() => abort("Failed to OCR the image"));
+
   if (!result.text) {
     result.text = "No text detected";
   }
@@ -112,12 +117,8 @@ export default defineCommand({
 
     await interaction.deferReply();
 
-    const result = await ocrImpl(imageUrl);
-    const payload = buildOcrPayload(
-      result.text,
-      result.detected_lang,
-      imageUrl
-    );
+    const { text, language, model } = await ocrImpl(imageUrl);
+    const payload = buildOcrPayload(text, language, model, imageUrl);
     await interaction.editReply(payload);
   },
 });

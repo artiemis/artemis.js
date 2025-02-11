@@ -75,6 +75,10 @@ export function findFirstUrl(text: string) {
   return findUrls(text)[0];
 }
 
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export function getImageFromAttachmentOrString(
   attachment?: Attachment | null,
   str?: string | null

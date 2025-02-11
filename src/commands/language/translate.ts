@@ -1,6 +1,7 @@
 import {
   AutocompleteInteraction,
   hyperlink,
+  inlineCode,
   SlashCommandBuilder,
   type InteractionEditReplyOptions,
 } from "discord.js";
@@ -14,6 +15,8 @@ import {
   translate,
 } from "../../utils/deepl";
 import { abort } from "../../utils/error";
+import type { OCRResult } from "../../types/ocr";
+import { capitalize } from "../../utils/functions";
 
 export async function translateAutocompleteImpl(
   interaction: AutocompleteInteraction
@@ -39,6 +42,7 @@ export async function translateImpl(
   text: string,
   source: string | null,
   target: string,
+  ocrModel?: OCRResult["model"],
   imageUrl?: string
 ): Promise<InteractionEditReplyOptions> {
   const {
@@ -56,7 +60,9 @@ export async function translateImpl(
 
   if (translatedText.length > 4096) {
     return {
-      content: imageUrl ? `${hyperlink("Image", imageUrl)}\n\n` : undefined,
+      content: ocrModel
+        ? `OCR: ${inlineCode(capitalize(ocrModel))}`
+        : "" + (imageUrl ? `\n${hyperlink("Image", imageUrl)}` : ""),
       files: [
         {
           name: `${displaySource}-${displayTarget}.txt`,
@@ -80,7 +86,12 @@ export async function translateImpl(
           icon_url: "https://www.google.com/s2/favicons?domain=deepl.com&sz=64",
         },
         footer: {
-          text: `Billed characters: ${billedCharacters}`,
+          text: ocrModel
+            ? `OCR: ${capitalize(ocrModel)}`
+            : `Billed characters: ${billedCharacters}`,
+          icon_url: ocrModel
+            ? `https://www.google.com/s2/favicons?domain=${ocrModel}.com&sz=64`
+            : undefined,
         },
       },
     ],

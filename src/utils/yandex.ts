@@ -1,19 +1,30 @@
 import yandexClient from "ya-ocr";
-import type { ClientType } from "ya-ocr/types";
+import type { OCRResult } from "../types/ocr";
 
 const yandex = new yandexClient();
 
 export async function yandexOcr(
   image: Buffer,
   mime: string
-): Promise<ClientType.OCRFullData>;
-export async function yandexOcr(url: string): Promise<ClientType.OCRFullData>;
+): Promise<OCRResult>;
+export async function yandexOcr(url: string): Promise<OCRResult>;
 export async function yandexOcr(
   resource: string | Buffer,
   mime?: string
-): Promise<ClientType.OCRFullData> {
+): Promise<OCRResult> {
+  let result;
+
   if (typeof resource === "string") {
-    return yandex.scanByUrl(resource);
+    result = await yandex.scanByUrl(resource);
+  } else {
+    result = await yandex.scanByBlob(
+      new Blob([resource], { type: mime }) as Blob
+    );
   }
-  return yandex.scanByBlob(new Blob([resource], { type: mime }) as Blob);
+
+  return {
+    text: result.text,
+    language: result.detected_lang ?? "n/a",
+    model: "yandex",
+  };
 }

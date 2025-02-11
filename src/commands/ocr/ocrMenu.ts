@@ -19,8 +19,8 @@ export default defineCommand({
 
     await interaction.deferReply();
 
-    const result = await ocrImpl(imageUrl);
-    const payload = buildOcrPayload(result.text, result.detected_lang);
+    const { text, language, model } = await ocrImpl(imageUrl);
+    const payload = buildOcrPayload(text, language, model);
     await interaction.editReply(payload);
   },
 });

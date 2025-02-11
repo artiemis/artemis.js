@@ -20,8 +20,8 @@ export default defineCommand({
 
     await interaction.deferReply();
 
-    const { text } = await ocrImpl(imageUrl);
-    const payload = await translateImpl(text, null, "en-US");
+    const { text, model } = await ocrImpl(imageUrl);
+    const payload = await translateImpl(text, null, "en-US", model);
     await interaction.editReply(payload);
   },
 });

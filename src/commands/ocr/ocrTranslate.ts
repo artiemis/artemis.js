@@ -57,8 +57,8 @@ export default defineCommand({
       abort("Target language not supported");
     }
 
-    const { text } = await ocrImpl(imageUrl);
-    const payload = await translateImpl(text, source, target, imageUrl);
+    const { text, model } = await ocrImpl(imageUrl);
+    const payload = await translateImpl(text, source, target, model, imageUrl);
     await interaction.editReply(payload);
   },
 });
