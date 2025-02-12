@@ -1,10 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import { defineCommand } from "..";
 import { abort } from "../../utils/error";
-import {
-  isSourceLanguageSupported,
-  isTargetLanguageSupported,
-} from "../../utils/deepl";
+import { isSourceLanguage, isTargetLanguage } from "../../utils/deepl";
 import {
   translateAutocompleteImpl,
   translateImpl,
@@ -16,7 +13,7 @@ export default defineCommand({
   data: new SlashCommandBuilder()
     .setName("ocrtranslate")
     .setDescription(
-      "OCR an image using Yandex and translate the result using DeepL"
+      "OCR an image using Google Lens or Yandex and translate the result using DeepL or Google Translate"
     )
     .addAttachmentOption((option) =>
       option.setName("image").setDescription("The image to OCR")
@@ -50,10 +47,10 @@ export default defineCommand({
 
     await interaction.deferReply();
 
-    if (source && !(await isSourceLanguageSupported(source))) {
+    if (source && !(await isSourceLanguage(source))) {
       abort("Source language not supported");
     }
-    if (target && !(await isTargetLanguageSupported(target))) {
+    if (target && !(await isTargetLanguage(target))) {
       abort("Target language not supported");
     }
 

@@ -9,13 +9,14 @@ import { defineCommand } from "..";
 import {
   getSourceLanguages,
   getTargetLanguages,
-  isSourceLanguageSupported,
-  isTargetLanguageSupported,
-  translate,
+  isSourceLanguage,
+  isTargetLanguage,
+  translate as translateDeepl,
 } from "../../utils/deepl";
 import { abort } from "../../utils/error";
 import type { OCRResult } from "../../types/ocr";
 import { capitalize, languageCodeToName } from "../../utils/functions";
+import { translate as translateGoogle } from "../../utils/gtrans";
 
 export async function translateAutocompleteImpl(
   interaction: AutocompleteInteraction
@@ -44,15 +45,18 @@ export async function translateImpl(
   ocrModel?: OCRResult["model"],
   imageUrl?: string
 ): Promise<InteractionEditReplyOptions> {
-  const {
-    text: translatedText,
-    detectedSourceLang,
-    billedCharacters,
-  } = await translate({
+  let { translatedText, detectedSourceLang, model } = await translateDeepl(
     text,
     source,
-    target,
-  });
+    target
+  ).catch(() => translateGoogle(text, "auto", "en"));
+
+  if (translatedText.trim() === text.trim() && model === "deepl") {
+    const result = await translateGoogle(text, "auto", "en");
+    translatedText = result.translatedText;
+    detectedSourceLang = result.detectedSourceLang;
+    model = result.model;
+  }
 
   const displaySource = languageCodeToName(detectedSourceLang);
   const displayTarget = languageCodeToName(target);
@@ -78,20 +82,20 @@ export async function translateImpl(
       {
         title: `From ${displaySource} to ${displayTarget}`,
         description: translatedText,
-        color: 0x0f2b46,
+        color: model === "deepl" ? 0x0f2b46 : 0x4285f4,
         ...(imageUrl ? { image: { url: imageUrl } } : {}),
         author: {
-          name: "DeepL",
-          icon_url: "https://www.google.com/s2/favicons?domain=deepl.com&sz=64",
+          name: model === "deepl" ? "DeepL" : "Google Translate",
+          icon_url: `https://www.google.com/s2/favicons?domain=${model}.com&sz=64`,
         },
-        footer: {
-          text: ocrModel
-            ? `OCR: ${capitalize(ocrModel)}`
-            : `Billed characters: ${billedCharacters}`,
-          icon_url: ocrModel
-            ? `https://www.google.com/s2/favicons?domain=${ocrModel}.com&sz=64`
-            : undefined,
-        },
+        ...(ocrModel
+          ? {
+              footer: {
+                text: `OCR: ${capitalize(ocrModel)}`,
+                icon_url: `https://www.google.com/s2/favicons?domain=${ocrModel}.com&sz=64`,
+              },
+            }
+          : {}),
       },
     ],
   };
@@ -100,7 +104,9 @@ export async function translateImpl(
 export default defineCommand({
   data: new SlashCommandBuilder()
     .setName("translate")
-    .setDescription("Translates text using DeepL")
+    .setDescription(
+      "Translates text using DeepL or Google Translate as fallback"
+    )
     .addStringOption((option) =>
       option
         .setName("text")
@@ -129,10 +135,10 @@ export default defineCommand({
 
     await interaction.deferReply();
 
-    if (source && !(await isSourceLanguageSupported(source))) {
+    if (source && !(await isSourceLanguage(source))) {
       abort("Source language not supported");
     }
-    if (target && !(await isTargetLanguageSupported(target))) {
+    if (target && !(await isTargetLanguage(target))) {
       abort("Target language not supported");
     }
 

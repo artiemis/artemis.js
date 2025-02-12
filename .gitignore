@@ -175,3 +175,4 @@ dist
 .DS_Store
 
 data/temp/*
+src/scripts/sandbox.ts

@@ -97,7 +97,7 @@ export async function ocrImpl(url: string) {
 export default defineCommand({
   data: new SlashCommandBuilder()
     .setName("ocr")
-    .setDescription("OCR an image using Yandex")
+    .setDescription("OCR an image using Google Lens or Yandex as fallback")
     .addAttachmentOption((option) =>
       option.setName("image").setDescription("The image to OCR")
     )
