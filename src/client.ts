@@ -1,12 +1,7 @@
-import {
-  Client,
-  Collection,
-  GatewayIntentBits,
-  Partials,
-  REST,
-} from "discord.js";
+import { Client, Collection, GatewayIntentBits, Partials } from "discord.js";
+import { REST } from "@discordjs/rest";
 import { env } from "./env";
-import { ActivityType, API } from "@discordjs/core";
+import { API } from "@discordjs/core";
 import type { Command } from "./types/command";
 import path from "node:path";
 import fs from "node:fs/promises";
@@ -30,9 +25,6 @@ export class ArtemisClient extends Client {
       ],
       allowedMentions: {
         parse: [],
-      },
-      presence: {
-        activities: [{ name: "🩷", type: ActivityType.Custom }],
       },
       partials: [Partials.Channel],
     });
