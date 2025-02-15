@@ -4,6 +4,7 @@ import {
   Client,
   Collection,
   GatewayIntentBits,
+  InteractionContextType,
   Partials,
 } from "discord.js";
 import { REST } from "@discordjs/rest";
@@ -113,6 +114,11 @@ export class ArtemisClient extends Client {
             ApplicationIntegrationType.GuildInstall,
             ApplicationIntegrationType.UserInstall
           )
+          .setContexts([
+            InteractionContextType.BotDM,
+            InteractionContextType.Guild,
+            InteractionContextType.PrivateChannel,
+          ])
           .toJSON()
       );
     const ownerCommands = this.commands
