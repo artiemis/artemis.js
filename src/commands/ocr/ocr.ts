@@ -11,7 +11,7 @@ import { yandexOcr } from "../../utils/yandex";
 import sharp from "sharp";
 import {
   capitalize,
-  getImageFromAttachmentOrString,
+  getImageUrlFromChatInteraction,
   languageCodeToName,
   run,
 } from "../../utils/functions";
@@ -76,7 +76,7 @@ export async function ocrImpl(url: string) {
 
   if (!type?.mime.startsWith("image/")) {
     console.log(type, url);
-    abort("The file must be an image!");
+    abort("Not a valid image!");
   }
 
   const compressed = await sharp(data)
@@ -107,9 +107,7 @@ export default defineCommand({
     ),
 
   async execute(interaction) {
-    const attachment = interaction.options.getAttachment("image");
-    const url = interaction.options.getString("url");
-    const imageUrl = getImageFromAttachmentOrString(attachment, url);
+    const imageUrl = getImageUrlFromChatInteraction(interaction);
 
     await interaction.deferReply();
 

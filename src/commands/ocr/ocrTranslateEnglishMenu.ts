@@ -2,7 +2,7 @@ import { ApplicationCommandType, ContextMenuCommandBuilder } from "discord.js";
 import { defineCommand } from "..";
 import { translateImpl } from "../language/translate";
 import { ocrImpl } from "./ocr";
-import { getImageFromAttachmentOrString } from "../../utils/functions";
+import { getImageUrlFromMessage } from "../../utils/functions";
 
 export default defineCommand({
   data: new ContextMenuCommandBuilder()
@@ -12,15 +12,7 @@ export default defineCommand({
   async execute(interaction) {
     if (!interaction.isMessageContextMenuCommand()) return;
 
-    const attachment = interaction.targetMessage.attachments.first();
-    const embed = interaction.targetMessage.embeds[0];
-
-    const imageUrl = getImageFromAttachmentOrString(
-      attachment,
-      embed?.image?.url ||
-        embed?.thumbnail?.url ||
-        interaction.targetMessage.content
-    );
+    const imageUrl = getImageUrlFromMessage(interaction.targetMessage);
 
     await interaction.deferReply();
 

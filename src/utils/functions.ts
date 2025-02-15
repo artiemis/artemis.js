@@ -2,7 +2,7 @@ import * as cheerio from "cheerio";
 import { execa } from "execa";
 import { customAlphabet } from "nanoid";
 import { URL_REGEX } from "./constants";
-import type { Attachment } from "discord.js";
+import { Message, type ChatInputCommandInteraction } from "discord.js";
 import { abort } from "./error";
 
 export const nanoid = customAlphabet("1234567890abcdef");
@@ -80,22 +80,31 @@ export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function getImageFromAttachmentOrString(
-  attachment?: Attachment | null,
-  str?: string | null
+export function getImageUrlFromChatInteraction(
+  interaction: ChatInputCommandInteraction,
+  attachmentName = "image",
+  urlName = "url"
 ) {
-  if (attachment) {
-    if (!attachment.contentType?.startsWith("image/")) {
-      abort("The file must be an image!");
-    }
-    return attachment.url;
-  } else if (str) {
-    const match = findFirstUrl(str);
-    if (!match) abort("The URL is invalid!");
-    return match;
-  } else {
-    abort("You must provide an image or an image URL!");
-  }
+  const attachment = interaction.options.getAttachment(attachmentName);
+  const url = interaction.options.getString(urlName);
+
+  return (
+    (attachment?.contentType?.startsWith("image/") && attachment.url) ||
+    (url && findFirstUrl(url)) ||
+    abort("You must provide a valid image or image URL!")
+  );
+}
+
+export function getImageUrlFromMessage(message: Message): string {
+  const attachment = message.attachments.first();
+
+  return (
+    (attachment?.contentType?.startsWith("image/") && attachment.url) ||
+    message.embeds[0]?.image?.url ||
+    message.embeds[0]?.thumbnail?.url ||
+    findFirstUrl(message.content) ||
+    abort("No valid image found!")
+  );
 }
 
 export function languageCodeToName(code: string) {

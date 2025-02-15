@@ -7,7 +7,7 @@ import {
   translateImpl,
 } from "../language/translate";
 import { ocrImpl } from "./ocr";
-import { getImageFromAttachmentOrString } from "../../utils/functions";
+import { getImageUrlFromChatInteraction } from "../../utils/functions";
 
 export default defineCommand({
   data: new SlashCommandBuilder()
@@ -37,13 +37,10 @@ export default defineCommand({
   autocomplete: translateAutocompleteImpl,
 
   async execute(interaction) {
-    const attachment = interaction.options.getAttachment("image");
-    const url = interaction.options.getString("url");
-
     const source = interaction.options.getString("source") ?? null;
     const target = interaction.options.getString("target") ?? "en-US";
 
-    const imageUrl = getImageFromAttachmentOrString(attachment, url);
+    const imageUrl = getImageUrlFromChatInteraction(interaction);
 
     await interaction.deferReply();
 
