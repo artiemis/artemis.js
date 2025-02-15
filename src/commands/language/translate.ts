@@ -3,7 +3,7 @@ import {
   hyperlink,
   inlineCode,
   SlashCommandBuilder,
-  type InteractionEditReplyOptions,
+  type InteractionReplyOptions,
 } from "discord.js";
 import { defineCommand } from "..";
 import {
@@ -44,7 +44,7 @@ export async function translateImpl(
   target: string,
   ocrModel?: OCRResult["model"],
   imageUrl?: string
-): Promise<InteractionEditReplyOptions> {
+) {
   let { translatedText, detectedSourceLang, model } = await translateDeepl(
     text,
     source,
@@ -74,7 +74,7 @@ export async function translateImpl(
           ),
         },
       ],
-    };
+    } satisfies InteractionReplyOptions;
   }
 
   return {
@@ -98,7 +98,7 @@ export async function translateImpl(
           : {}),
       },
     ],
-  };
+  } satisfies InteractionReplyOptions;
 }
 
 export default defineCommand({
@@ -136,10 +136,10 @@ export default defineCommand({
     await interaction.deferReply();
 
     if (source && !(await isSourceLanguage(source))) {
-      abort("Source language not supported");
+      abort("Source language not found");
     }
     if (target && !(await isTargetLanguage(target))) {
-      abort("Target language not supported");
+      abort("Target language not found");
     }
 
     const payload = await translateImpl(text, source, target);

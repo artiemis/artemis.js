@@ -2,7 +2,7 @@ import {
   hyperlink,
   inlineCode,
   SlashCommandBuilder,
-  type InteractionEditReplyOptions,
+  type InteractionReplyOptions,
 } from "discord.js";
 import { defineCommand } from "..";
 import { downloadFile } from "../../utils/http";
@@ -23,7 +23,7 @@ export function buildOcrPayload(
   language: string,
   model: OCRResult["model"],
   imageUrl?: string
-): InteractionEditReplyOptions {
+) {
   const languageName = languageCodeToName(language) ?? "Unknown";
 
   if (text.length > 4096) {
@@ -38,7 +38,7 @@ export function buildOcrPayload(
           attachment: Buffer.from(text),
         },
       ],
-    };
+    } satisfies InteractionReplyOptions;
   }
 
   return {
@@ -62,7 +62,7 @@ export function buildOcrPayload(
         },
       },
     ],
-  };
+  } satisfies InteractionReplyOptions;
 }
 
 export async function ocrImpl(url: string) {

@@ -1,6 +1,14 @@
 import { SlashCommandBuilder } from "discord.js";
 import { defineCommand } from "..";
 import { STATUS_CODES } from "http";
+import Fuse from "fuse.js";
+
+const codes = Object.entries(STATUS_CODES).map(([code, reason]) => ({
+  code,
+  reason,
+}));
+
+const fuzzyCodes = new Fuse(codes, { keys: ["code", "reason"] });
 
 export default defineCommand({
   data: new SlashCommandBuilder()
@@ -15,14 +23,31 @@ export default defineCommand({
     ),
 
   async autocomplete(interaction) {
+    const value = interaction.options.getFocused();
+    if (!value) {
+      await interaction.respond(
+        codes
+          .map(({ code, reason }) => ({
+            name: `${code} - ${reason}`,
+            value: +code,
+          }))
+          .slice(0, 25)
+      );
+      return;
+    } else if (STATUS_CODES[value]) {
+      await interaction.respond([
+        { name: `${value} - ${STATUS_CODES[value]}`, value: +value },
+      ]);
+      return;
+    }
+
     await interaction.respond(
-      Object.keys(STATUS_CODES)
-        .filter((code) =>
-          code.startsWith(
-            interaction.options.getInteger("code", true).toString()
-          )
-        )
-        .map((code) => ({ name: code, value: +code }))
+      fuzzyCodes
+        .search(interaction.options.getFocused())
+        .map(({ item }) => ({
+          name: `${item.code} - ${item.reason}`,
+          value: +item.code,
+        }))
         .slice(0, 25)
     );
   },

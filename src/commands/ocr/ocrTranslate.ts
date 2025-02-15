@@ -48,10 +48,10 @@ export default defineCommand({
     await interaction.deferReply();
 
     if (source && !(await isSourceLanguage(source))) {
-      abort("Source language not supported");
+      abort("Source language not found");
     }
     if (target && !(await isTargetLanguage(target))) {
-      abort("Target language not supported");
+      abort("Target language not found");
     }
 
     const { text, model } = await ocrImpl(imageUrl);
