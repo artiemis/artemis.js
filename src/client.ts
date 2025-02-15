@@ -36,7 +36,7 @@ export class ArtemisClient extends Client {
       },
       partials: [Partials.Channel],
       presence: {
-        activities: [{ name: "hecho con ❤️", type: ActivityType.Custom }],
+        activities: [{ name: "hecha con ❤️", type: ActivityType.Custom }],
       },
     });
 
