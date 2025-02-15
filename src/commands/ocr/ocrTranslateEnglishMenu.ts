@@ -13,9 +13,12 @@ export default defineCommand({
     if (!interaction.isMessageContextMenuCommand()) return;
 
     const attachment = interaction.targetMessage.attachments.first();
+    const embed = interaction.targetMessage.embeds[0];
+
     const imageUrl = getImageFromAttachmentOrString(
       attachment,
-      interaction.targetMessage.embeds[0]?.image?.url ||
+      embed?.image?.url ||
+        embed?.thumbnail?.url ||
         interaction.targetMessage.content
     );
 

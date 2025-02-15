@@ -75,6 +75,7 @@ export async function ocrImpl(url: string) {
   });
 
   if (!type?.mime.startsWith("image/")) {
+    console.log(type, url);
     abort("The file must be an image!");
   }
 
