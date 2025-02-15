@@ -114,11 +114,11 @@ export class ArtemisClient extends Client {
             ApplicationIntegrationType.GuildInstall,
             ApplicationIntegrationType.UserInstall
           )
-          .setContexts([
+          .setContexts(
             InteractionContextType.BotDM,
             InteractionContextType.Guild,
-            InteractionContextType.PrivateChannel,
-          ])
+            InteractionContextType.PrivateChannel
+          )
           .toJSON()
       );
     const ownerCommands = this.commands
