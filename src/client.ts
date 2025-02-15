@@ -1,5 +1,6 @@
 import {
   ActivityType,
+  ApplicationIntegrationType,
   Client,
   Collection,
   GatewayIntentBits,
@@ -106,10 +107,21 @@ export class ArtemisClient extends Client {
 
     const publicCommands = this.commands
       .filter((command) => !command.isOwnerOnly)
-      .map((command) => command.data.toJSON());
+      .map((command) =>
+        command.data
+          .setIntegrationTypes(
+            ApplicationIntegrationType.GuildInstall,
+            ApplicationIntegrationType.UserInstall
+          )
+          .toJSON()
+      );
     const ownerCommands = this.commands
       .filter((command) => command.isOwnerOnly)
-      .map((command) => command.data.toJSON());
+      .map((command) =>
+        command.data
+          .setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
+          .toJSON()
+      );
 
     let guildCount = 0;
     let globalCount = 0;
