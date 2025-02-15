@@ -18,7 +18,8 @@ export default defineCommand({
     const attachment = interaction.targetMessage.attachments.first();
     const imageUrl = getImageFromAttachmentOrString(
       attachment,
-      interaction.targetMessage.content
+      interaction.targetMessage.embeds[0]?.image?.url ||
+        interaction.targetMessage.content
     );
 
     const modal = buildTranslateModal();
