@@ -1,5 +1,5 @@
 import {
-  hyperlink,
+  AttachmentBuilder,
   inlineCode,
   SlashCommandBuilder,
   type InteractionReplyOptions,
@@ -22,7 +22,7 @@ export function buildOcrPayload(
   text: string,
   language: string,
   model: OCRResult["model"],
-  imageUrl?: string
+  image?: AttachmentBuilder
 ) {
   const languageName = languageCodeToName(language) ?? "Unknown";
 
@@ -30,18 +30,19 @@ export function buildOcrPayload(
     return {
       content:
         `Detected language: ${inlineCode(languageName)}` +
-        `\nOCR: ${inlineCode(capitalize(model))}` +
-        (imageUrl ? `\n${hyperlink("Image", imageUrl)}` : ""),
+        `\nOCR: ${inlineCode(capitalize(model))}`,
       files: [
         {
           name: "ocr.txt",
           attachment: Buffer.from(text),
         },
+        ...(image ? [image] : []),
       ],
     } satisfies InteractionReplyOptions;
   }
 
   return {
+    ...(image ? { files: [image] } : {}),
     embeds: [
       {
         description: text,
@@ -55,11 +56,11 @@ export function buildOcrPayload(
                 },
               ]
             : [],
-        ...(imageUrl ? { image: { url: imageUrl } } : {}),
         author: {
           name: capitalize(model),
           icon_url: `https://www.google.com/s2/favicons?domain=${model}.com&sz=64`,
         },
+        ...(image ? { image: { url: "attachment://image.jpg" } } : {}),
       },
     ],
   } satisfies InteractionReplyOptions;
@@ -75,13 +76,12 @@ export async function ocrImpl(url: string) {
   });
 
   if (!type?.mime.startsWith("image/")) {
-    console.log(type, url);
     abort("Not a valid image!");
   }
 
   const compressed = await sharp(data)
-    .resize(1000)
-    .jpeg({ quality: 90 })
+    .resize({ width: 1000, withoutEnlargement: true })
+    .jpeg({ quality: 95 })
     .toBuffer();
 
   const result = await lensOcr(compressed)
@@ -92,7 +92,10 @@ export async function ocrImpl(url: string) {
     result.text = "No text detected";
   }
 
-  return result;
+  return {
+    ...result,
+    attachment: new AttachmentBuilder(compressed).setName("image.jpg"),
+  };
 }
 
 export default defineCommand({
@@ -111,8 +114,8 @@ export default defineCommand({
 
     await interaction.deferReply();
 
-    const { text, language, model } = await ocrImpl(imageUrl);
-    const payload = buildOcrPayload(text, language, model, imageUrl);
+    const { text, language, model, attachment } = await ocrImpl(imageUrl);
+    const payload = buildOcrPayload(text, language, model, attachment);
     await interaction.editReply(payload);
   },
 });

@@ -1,6 +1,6 @@
 import {
+  AttachmentBuilder,
   AutocompleteInteraction,
-  hyperlink,
   inlineCode,
   SlashCommandBuilder,
   type InteractionReplyOptions,
@@ -43,7 +43,7 @@ export async function translateImpl(
   source: string | null,
   target: string,
   ocrModel?: OCRResult["model"],
-  imageUrl?: string
+  image?: AttachmentBuilder
 ) {
   let { translatedText, detectedSourceLang, model } = await translateDeepl(
     text,
@@ -65,7 +65,7 @@ export async function translateImpl(
     return {
       content: ocrModel
         ? `OCR: ${inlineCode(capitalize(ocrModel))}`
-        : "" + (imageUrl ? `\n${hyperlink("Image", imageUrl)}` : ""),
+        : undefined,
       files: [
         {
           name: `${displaySource}-${displayTarget}.txt`,
@@ -73,17 +73,18 @@ export async function translateImpl(
             `--- From ${displaySource} to ${displayTarget} ---\n${translatedText}`
           ),
         },
+        ...(image ? [image] : []),
       ],
     } satisfies InteractionReplyOptions;
   }
 
   return {
+    ...(image ? { files: [image] } : {}),
     embeds: [
       {
         title: `From ${displaySource} to ${displayTarget}`,
         description: translatedText,
         color: model === "deepl" ? 0x0f2b46 : 0x4285f4,
-        ...(imageUrl ? { image: { url: imageUrl } } : {}),
         author: {
           name: model === "deepl" ? "DeepL" : "Google Translate",
           icon_url: `https://www.google.com/s2/favicons?domain=${model}.com&sz=64`,
@@ -96,6 +97,7 @@ export async function translateImpl(
               },
             }
           : {}),
+        ...(image ? { image: { url: "attachment://image.jpg" } } : {}),
       },
     ],
   } satisfies InteractionReplyOptions;

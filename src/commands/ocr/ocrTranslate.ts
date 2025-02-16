@@ -51,8 +51,14 @@ export default defineCommand({
       abort("Target language not found");
     }
 
-    const { text, model } = await ocrImpl(imageUrl);
-    const payload = await translateImpl(text, source, target, model, imageUrl);
+    const { text, model, attachment } = await ocrImpl(imageUrl);
+    const payload = await translateImpl(
+      text,
+      source,
+      target,
+      model,
+      attachment
+    );
     await interaction.editReply(payload);
   },
 });
