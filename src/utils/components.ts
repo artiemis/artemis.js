@@ -21,19 +21,16 @@ export async function confirmPrompt(
       .setStyle(ButtonStyle.Danger)
   );
 
-  const msg = (
-    await interaction.reply({
-      content: message,
-      components: [row],
-      withResponse: true,
-    })
-  ).resource!.message!;
+  const reply = await interaction.reply({
+    content: message,
+    components: [row],
+  });
 
-  const confirmation = await msg
+  const confirmation = await reply
     .awaitMessageComponent({
       componentType: ComponentType.Button,
       time: 60000,
-      filter: (i) => i.user.id === interaction.user.id,
+      filter: i => i.user.id === interaction.user.id,
       dispose: true,
     })
     .catch(() => {

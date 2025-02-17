@@ -18,7 +18,7 @@ export async function lensOcr(resource: string | Buffer): Promise<OCRResult> {
   }
 
   return {
-    text: result.segments.map((s) => s.text).join("\n"),
+    text: result.segments.map(s => s.text).join("\n"),
     language: result.language ?? "n/a",
     model: "google",
   };

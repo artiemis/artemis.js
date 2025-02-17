@@ -62,7 +62,7 @@ export async function getUsage() {
 export async function isSourceLanguage(code: string) {
   const sourceLanguages = await getSourceLanguages();
   return (
-    sourceLanguages.find((l) => l.code.toLowerCase() === code.toLowerCase()) !==
+    sourceLanguages.find(l => l.code.toLowerCase() === code.toLowerCase()) !==
     undefined
   );
 }
@@ -70,7 +70,7 @@ export async function isSourceLanguage(code: string) {
 export async function isTargetLanguage(code: string) {
   const targetLanguages = await getTargetLanguages();
   return (
-    targetLanguages.find((l) => l.code.toLowerCase() === code.toLowerCase()) !==
+    targetLanguages.find(l => l.code.toLowerCase() === code.toLowerCase()) !==
     undefined
   );
 }

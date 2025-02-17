@@ -12,7 +12,7 @@ export default defineCommand({
   data: new SlashCommandBuilder()
     .setName("wiktionary")
     .setDescription("Looks up a term on Wiktionary")
-    .addStringOption((option) =>
+    .addStringOption(option =>
       option
         .setName("term")
         .setDescription("The term to look up")
@@ -33,12 +33,12 @@ export default defineCommand({
       return;
     }
 
-    suggestions.forEach((suggestion) => {
+    suggestions.forEach(suggestion => {
       titleCache.set(suggestion.key, suggestion.title);
     });
 
     const choices = suggestions
-      .map((suggestion) => ({
+      .map(suggestion => ({
         name: suggestion.title,
         value: `:${suggestion.key}`,
       }))
@@ -69,17 +69,17 @@ export default defineCommand({
 
     const title = titleCache.get(term) ?? term;
     const msg = new PaginatedMessage();
-    msg.setSelectMenuOptions((i) => ({
+    msg.setSelectMenuOptions(i => ({
       label: definitions[i - 1].language,
       description: `Page ${i}`,
     }));
 
-    definitions.forEach((definition) => {
+    definitions.forEach(definition => {
       const description = definition.entries
-        .map((entry) => {
+        .map(entry => {
           const name = entry.partOfSpeech;
           const definitions = entry.definitions
-            .filter((def) => def.definition)
+            .filter(def => def.definition)
             .map((def, i) => {
               const prefix = inlineCode(`${i + 1}.`);
               const definition = stripHtml(def.definition);
@@ -91,7 +91,7 @@ export default defineCommand({
         })
         .join("\n\n");
 
-      msg.addPageEmbed((embed) =>
+      msg.addPageEmbed(embed =>
         embed
           .setAuthor({
             name: `Wiktionary - ${definition.language}`,

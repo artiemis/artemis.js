@@ -43,7 +43,7 @@ export class ArtemisClient extends Client {
     const rest = new REST().setToken(env.DISCORD_TOKEN);
     this.api = new API(rest);
 
-    this.on("error", (err) => {
+    this.on("error", err => {
       logger.error(err);
     });
   }
@@ -56,15 +56,15 @@ export class ArtemisClient extends Client {
     const commandsDir = path.join(import.meta.dir, "commands");
     const categories = await fs
       .readdir(commandsDir)
-      .then((categories) =>
-        categories.filter((category) => !category.includes("."))
+      .then(categories =>
+        categories.filter(category => !category.includes("."))
       );
     const promises: Promise<void>[] = [];
 
     for (const category of categories) {
       const files = await fs
         .readdir(path.join(commandsDir, category))
-        .then((files) => files.filter((file) => file.endsWith(".ts")));
+        .then(files => files.filter(file => file.endsWith(".ts")));
 
       for (const file of files) {
         promises.push(
@@ -90,7 +90,7 @@ export class ArtemisClient extends Client {
     const eventsDir = path.join(import.meta.dir, "events");
     const files = await fs
       .readdir(eventsDir)
-      .then((files) => files.filter((file) => file !== "index.ts"));
+      .then(files => files.filter(file => file !== "index.ts"));
 
     for (const file of files) {
       const { default: event } = await import(path.join(eventsDir, file));
@@ -107,8 +107,8 @@ export class ArtemisClient extends Client {
     }
 
     const publicCommands = this.commands
-      .filter((command) => !command.isOwnerOnly)
-      .map((command) =>
+      .filter(command => !command.isOwnerOnly)
+      .map(command =>
         command.data
           .setIntegrationTypes(
             ApplicationIntegrationType.GuildInstall,
@@ -122,8 +122,8 @@ export class ArtemisClient extends Client {
           .toJSON()
       );
     const ownerCommands = this.commands
-      .filter((command) => command.isOwnerOnly)
-      .map((command) =>
+      .filter(command => command.isOwnerOnly)
+      .map(command =>
         command.data
           .setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
           .toJSON()
@@ -138,7 +138,7 @@ export class ArtemisClient extends Client {
           ...publicCommands,
           ...ownerCommands,
         ])
-        .then((res) => (guildCount += res.length));
+        .then(res => (guildCount += res.length));
     } else {
       await this.api.applicationCommands
         .bulkOverwriteGuildCommands(
@@ -146,10 +146,10 @@ export class ArtemisClient extends Client {
           env.DEV_GUILD_ID,
           ownerCommands
         )
-        .then((res) => (guildCount += res.length));
+        .then(res => (guildCount += res.length));
       await this.api.applicationCommands
         .bulkOverwriteGlobalCommands(env.APPLICATION_ID, publicCommands)
-        .then((res) => (globalCount += res.length));
+        .then(res => (globalCount += res.length));
     }
 
     logger.info(

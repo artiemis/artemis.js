@@ -14,7 +14,7 @@ export default defineCommand({
   data: new SlashCommandBuilder()
     .setName("httpcat")
     .setDescription("Sends a cat for the given HTTP code")
-    .addIntegerOption((option) =>
+    .addIntegerOption(option =>
       option
         .setName("code")
         .setDescription("HTTP code")

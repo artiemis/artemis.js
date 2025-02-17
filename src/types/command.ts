@@ -21,8 +21,8 @@ type InferInteraction<B> = B extends
   | SlashCommandSubcommandsOnlyBuilder
   ? ChatInputCommandInteraction
   : B extends ContextMenuCommandBuilder
-  ? MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction
-  : never;
+    ? MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction
+    : never;
 
 export interface Command<B extends CommandBuilder = SlashCommandBuilder> {
   data: B;

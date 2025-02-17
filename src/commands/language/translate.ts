@@ -27,10 +27,10 @@ export async function translateAutocompleteImpl(
       ? await getSourceLanguages()
       : await getTargetLanguages();
   const choices = languages
-    .filter((language) =>
+    .filter(language =>
       language.name.toLowerCase().includes(option.value.toLowerCase())
     )
-    .map((language) => ({
+    .map(language => ({
       name: language.name,
       value: language.code,
     }))
@@ -109,19 +109,19 @@ export default defineCommand({
     .setDescription(
       "Translates text using DeepL or Google Translate as fallback"
     )
-    .addStringOption((option) =>
+    .addStringOption(option =>
       option
         .setName("text")
         .setDescription("The text to translate")
         .setRequired(true)
     )
-    .addStringOption((option) =>
+    .addStringOption(option =>
       option
         .setName("source")
         .setDescription("Source language of the text")
         .setAutocomplete(true)
     )
-    .addStringOption((option) =>
+    .addStringOption(option =>
       option
         .setName("target")
         .setDescription("Target language of the text")

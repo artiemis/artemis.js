@@ -6,7 +6,7 @@ export default defineCommand({
   data: new SlashCommandBuilder()
     .setName("whois")
     .setDescription("Look up IP or domain info")
-    .addStringOption((option) =>
+    .addStringOption(option =>
       option.setName("query").setDescription("IP or domain").setRequired(true)
     ),
 

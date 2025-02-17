@@ -50,7 +50,7 @@ export const getWikipediaEditions = lazy(async () => {
       subdomain: $(el).find("> td:nth-child(5)").text(),
     }))
     .toArray()
-    .filter((edition) => edition.language && edition.subdomain);
+    .filter(edition => edition.language && edition.subdomain);
 });
 
 export async function searchWikipedia(client: KyInstance, query: string) {

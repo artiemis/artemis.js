@@ -7,7 +7,7 @@ export default defineCommand({
   data: new SlashCommandBuilder()
     .setName("charinfo")
     .setDescription("Unicode character info for given text")
-    .addStringOption((option) =>
+    .addStringOption(option =>
       option
         .setName("text")
         .setDescription("The text to get info for")

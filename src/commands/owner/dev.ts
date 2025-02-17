@@ -12,7 +12,7 @@ import { defineCommand } from "..";
 import { client } from "../../client";
 import { abort } from "../../utils/error";
 import { restart as restartBot } from "../../utils/restart";
-import { shell } from "../../utils/functions";
+import { noop, shell } from "../../utils/functions";
 
 export async function sync(interaction: ChatInputCommandInteraction) {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
@@ -39,7 +39,7 @@ export async function restart(interaction: ChatInputCommandInteraction) {
 }
 
 export async function update(interaction: ChatInputCommandInteraction) {
-  const response = await interaction.deferReply({ withResponse: true });
+  const reply = await interaction.deferReply();
   const result = await shell`git pull`;
   const output = result.stdout + result.stderr;
 
@@ -63,14 +63,14 @@ export async function update(interaction: ChatInputCommandInteraction) {
   });
 
   if (!isUpToDate && !result.failed) {
-    response.resource?.message
-      ?.awaitMessageComponent({
+    await reply
+      .awaitMessageComponent({
         componentType: ComponentType.Button,
         time: 30000,
-        filter: (i) => i.user.id === interaction.user.id,
+        filter: i => i.user.id === interaction.user.id,
         dispose: true,
       })
-      .then(async (interaction) => {
+      .then(async interaction => {
         await interaction.update({
           components: [],
         });
@@ -81,7 +81,8 @@ export async function update(interaction: ChatInputCommandInteraction) {
             channelId: interaction.message.channelId,
           },
         });
-      });
+      })
+      .catch(noop);
   }
 }
 
@@ -89,13 +90,13 @@ export default defineCommand({
   data: new SlashCommandBuilder()
     .setName("dev")
     .setDescription("Owner commands")
-    .addSubcommand((subcommand) =>
+    .addSubcommand(subcommand =>
       subcommand.setName("sync").setDescription("Sync application commands")
     )
-    .addSubcommand((subcommand) =>
+    .addSubcommand(subcommand =>
       subcommand.setName("restart").setDescription("Restarts the bot")
     )
-    .addSubcommand((subcommand) =>
+    .addSubcommand(subcommand =>
       subcommand.setName("update").setDescription("Updates the bot")
     ),
   isOwnerOnly: true,

@@ -20,7 +20,7 @@ const languageCodes = lazy(
 );
 
 export const getLanguages = lazy(() =>
-  languageCodes().map((code) => ({
+  languageCodes().map(code => ({
     code,
     name: languageCodeToName(code),
   }))
@@ -51,7 +51,7 @@ export async function translate(
 
   return {
     translatedText: sentences
-      .map((s) => s?.trans)
+      .map(s => s?.trans)
       .filter(Boolean)
       .join(""),
     detectedSourceLang: src,

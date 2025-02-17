@@ -13,36 +13,29 @@ import { translateImpl } from "./translate";
 import { findFuzzyLanguage } from "../../utils/deepl";
 
 export function buildTranslateModal() {
-  const modal = new ModalBuilder()
+  return new ModalBuilder()
     .setTitle("Translate")
-    .setCustomId("translate-modal");
-
-  const sourceInput = new TextInputBuilder()
-    .setLabel("Source language")
-    .setCustomId("source")
-    .setStyle(TextInputStyle.Short)
-    .setMaxLength(20)
-    .setPlaceholder("en, pl, hungarian, japanese...")
-    .setRequired(false);
-
-  const targetInput = new TextInputBuilder()
-    .setLabel("Target language")
-    .setCustomId("target")
-    .setStyle(TextInputStyle.Short)
-    .setMaxLength(20)
-    .setPlaceholder("en, pl, hungarian, japanese...")
-    .setRequired(false);
-
-  const sourceRow =
-    new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-      sourceInput
+    .setCustomId("translate-modal")
+    .addComponents(
+      new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+        new TextInputBuilder()
+          .setLabel("Source language")
+          .setCustomId("source")
+          .setStyle(TextInputStyle.Short)
+          .setMaxLength(20)
+          .setPlaceholder("en, pl, hungarian, japanese...")
+          .setRequired(false)
+      ),
+      new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+        new TextInputBuilder()
+          .setLabel("Target language")
+          .setCustomId("target")
+          .setStyle(TextInputStyle.Short)
+          .setMaxLength(20)
+          .setPlaceholder("en, pl, hungarian, japanese...")
+          .setRequired(false)
+      )
     );
-  const targetRow =
-    new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-      targetInput
-    );
-
-  return modal.addComponents(sourceRow, targetRow);
 }
 
 export default defineCommand({
@@ -61,10 +54,10 @@ export default defineCommand({
 
     await interaction
       .awaitModalSubmit({
-        filter: (i) => i.customId === "translate-modal",
+        filter: i => i.customId === "translate-modal",
         time: 60000 * 5,
       })
-      .then(async (interaction) => {
+      .then(async interaction => {
         await interaction.deferReply();
 
         const sourceField =
@@ -75,15 +68,11 @@ export default defineCommand({
         const source =
           sourceField === "auto"
             ? null
-            : await findFuzzyLanguage(sourceField, "source").then(
-                (l) => l?.code
-              );
+            : await findFuzzyLanguage(sourceField, "source").then(l => l?.code);
         const target =
           targetField === "en-US"
             ? targetField
-            : await findFuzzyLanguage(targetField, "target").then(
-                (l) => l?.code
-              );
+            : await findFuzzyLanguage(targetField, "target").then(l => l?.code);
 
         if (source === undefined) {
           abort("Source language not found");

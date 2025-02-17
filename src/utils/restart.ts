@@ -52,7 +52,7 @@ export async function maybeSendRestarted() {
     if (!channel) return;
 
     await silently(
-      channel.messages.fetch(state.message.id).then((msg) => msg.react("☑️"))
+      channel.messages.fetch(state.message.id).then(msg => msg.react("☑️"))
     );
   }
 

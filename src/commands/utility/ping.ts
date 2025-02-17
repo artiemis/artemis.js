@@ -15,19 +15,20 @@ export default defineCommand({
       );
     }
 
-    const msg = (
-      await interaction.reply({
+    await interaction
+      .reply({
         content: `:ping_pong: Pong!\nWebSocket latency is ${inlineCode(
           Math.round(client.ws.ping).toString()
         )} ms.`,
         withResponse: true,
       })
-    ).resource!.message!;
-
-    await msg.edit(
-      `${msg.content}\nAPI roundtrip latency is ${inlineCode(
-        (msg.createdTimestamp - interaction.createdTimestamp).toString()
-      )}ms.`
-    );
+      .then(reply => {
+        const msg = reply.resource?.message;
+        return msg?.edit(
+          `${msg?.content}\nAPI roundtrip latency is ${inlineCode(
+            (msg?.createdTimestamp - interaction.createdTimestamp).toString()
+          )}ms.`
+        );
+      });
   },
 });

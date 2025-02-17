@@ -10,7 +10,7 @@ export default defineCommand({
   data: new SlashCommandBuilder()
     .setName("isdown")
     .setDescription("URL healthcheck")
-    .addStringOption((option) =>
+    .addStringOption(option =>
       option.setName("url").setDescription("The URL to check").setRequired(true)
     ),
 

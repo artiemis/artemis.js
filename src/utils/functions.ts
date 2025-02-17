@@ -16,7 +16,7 @@ export function pickRandom<T>(arr: T[]): T {
 }
 
 export function sleep(ms: number) {
-  return new Promise<void>((resolve) => setTimeout(resolve, ms));
+  return new Promise<void>(resolve => setTimeout(resolve, ms));
 }
 
 export function chunk<T>(arr: T[], size: number): T[][];

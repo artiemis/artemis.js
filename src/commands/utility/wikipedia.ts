@@ -15,13 +15,13 @@ export default defineCommand({
   data: new SlashCommandBuilder()
     .setName("wikipedia")
     .setDescription("Looks up a thing on Wikipedia")
-    .addStringOption((option) =>
+    .addStringOption(option =>
       option
         .setName("query")
         .setDescription("The thing to look up")
         .setAutocomplete(true)
     )
-    .addStringOption((option) =>
+    .addStringOption(option =>
       option
         .setName("language")
         .setDescription("The Wikipedia language edition to use")
@@ -37,11 +37,11 @@ export default defineCommand({
       const editions = await getWikipediaEditions();
       const choices = editions
         .filter(
-          (edition) =>
+          edition =>
             edition.subdomain.toLowerCase() === value ||
             edition.language.toLowerCase().includes(value)
         )
-        .map((edition) => ({
+        .map(edition => ({
           name: `${edition.language} (${edition.subdomain})`,
           value: `:${edition.subdomain}`,
         }))
@@ -57,7 +57,7 @@ export default defineCommand({
         option.value
       );
       const choices = suggestions
-        .map((suggestion) => ({
+        .map(suggestion => ({
           name: suggestion,
           value: `:${suggestion}`,
         }))
@@ -77,10 +77,9 @@ export default defineCommand({
     } else {
       const editions = await getWikipediaEditions();
       const edition =
-        editions.find((endpoint) => endpoint.subdomain === language) ||
+        editions.find(endpoint => endpoint.subdomain === language) ||
         editions.find(
-          (endpoint) =>
-            endpoint.language.toLowerCase() === language.toLowerCase()
+          endpoint => endpoint.language.toLowerCase() === language.toLowerCase()
         );
       if (!edition) {
         abort("No such Wikipedia language edition");

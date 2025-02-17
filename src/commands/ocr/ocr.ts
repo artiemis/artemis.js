@@ -102,10 +102,10 @@ export default defineCommand({
   data: new SlashCommandBuilder()
     .setName("ocr")
     .setDescription("OCR an image using Google Lens or Yandex as fallback")
-    .addAttachmentOption((option) =>
+    .addAttachmentOption(option =>
       option.setName("image").setDescription("The image to OCR")
     )
-    .addStringOption((option) =>
+    .addStringOption(option =>
       option.setName("url").setDescription("The image URL to OCR")
     ),
 
