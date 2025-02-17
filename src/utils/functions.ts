@@ -49,15 +49,6 @@ export async function silently<T extends Promise<any>>(p?: T) {
   } catch {}
 }
 
-export function dedent(parts: TemplateStringsArray, ...values: unknown[]) {
-  return parts
-    .flatMap((part, i) =>
-      i < values.length ? [part, String(values[i])] : [part]
-    )
-    .join("")
-    .replace(/^ +/gm, "");
-}
-
 export function lazy<T>(cb: () => T) {
   let defaultValue: T;
 

@@ -15,6 +15,7 @@
     "@sapphire/discord.js-utilities": "^7.3.2",
     "cheerio": "^1.0.0",
     "chrome-lens-ocr": "^4.0.4",
+    "common-tags": "^1.8.2",
     "deepl-node": "^1.16.0",
     "discord.js": "^14.18.0",
     "execa": "^9.5.2",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@eslint/js": "^9.20.0",
     "@types/bun": "latest",
+    "@types/common-tags": "^1.8.4",
     "eslint": "^9.20.1",
     "typescript-eslint": "^8.24.0"
   },

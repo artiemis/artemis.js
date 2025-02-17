@@ -1,7 +1,8 @@
 import { Events } from "discord.js";
 import { defineEvent } from ".";
-import { dedent, pickRandom } from "../utils/functions";
+import { pickRandom } from "../utils/functions";
 import { BAD_BOT_EMOJIS, GOOD_BOT_EMOJIS } from "../utils/constants";
+import { stripIndents } from "common-tags";
 
 export default defineEvent({
   name: Events.MessageCreate,
@@ -12,11 +13,11 @@ export default defineEvent({
     const command = message.content.match(/^\$[a-zA-Z]+$/);
     if (command) {
       if (
-        ["lens", "lenstr", "deepl"].includes(command[0].slice(1)) &&
+        ["ocr", "lens", "lenstr", "deepl"].includes(command[0].slice(1)) &&
         message.reference
       ) {
         await message.reply(
-          dedent`The bot has migrated to application commands!
+          stripIndents`The bot has migrated to application commands!
           If you wish to OCR and/or translate someone else's message, please select the appropriate action from the context menu on their message.
 
           Desktop: Right click on the message and select the action you wish to perform.
@@ -28,7 +29,7 @@ export default defineEvent({
       }
 
       await message.reply(
-        dedent`The bot has migrated to slash commands!
+        stripIndents`The bot has migrated to slash commands!
         
         Start typing \`/\` to see the available commands.
         For example: \`/${command[0].slice(1)}\`
