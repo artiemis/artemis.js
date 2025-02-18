@@ -13,7 +13,7 @@ import {
   isTargetLanguage,
   translate as translateDeepl,
 } from "../../utils/deepl";
-import { abort } from "../../utils/error";
+import { abort, notifyError } from "../../utils/error";
 import type { OCRResult } from "../../types/ocr";
 import { capitalize, languageCodeToName } from "../../utils/functions";
 import { translate as translateGoogle } from "../../utils/gtrans";
@@ -52,6 +52,7 @@ export async function translateImpl(
     target
   ).catch(err => {
     logger.error(err, "DeepL error, falling back to Google Translate");
+    notifyError(err);
     return translateGoogle(text, "auto", "en");
   });
 

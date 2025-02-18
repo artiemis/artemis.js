@@ -75,7 +75,7 @@ async function handleChatInputCommand(
       const trace = nanoid();
       content += `\ntrace: ${inlineCode(trace)}`;
       logger.error({ trace, err });
-      notifyError(trace, err);
+      notifyError(err, trace);
     }
 
     await interaction[

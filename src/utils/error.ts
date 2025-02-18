@@ -14,7 +14,7 @@ export function isExplicitCommandError(
   return error instanceof ExplicitCommandError;
 }
 
-export async function notifyError(trace: string, error: any) {
+export async function notifyError(error: any, trace?: string) {
   return (client.channels.cache.get(env.DEV_CHANNEL_ID) as TextChannel).send({
     content: trace,
     embeds: [
