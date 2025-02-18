@@ -17,6 +17,7 @@ import { abort } from "../../utils/error";
 import type { OCRResult } from "../../types/ocr";
 import { capitalize, languageCodeToName } from "../../utils/functions";
 import { translate as translateGoogle } from "../../utils/gtrans";
+import { logger } from "../../utils/logger";
 
 export async function translateAutocompleteImpl(
   interaction: AutocompleteInteraction
@@ -49,7 +50,10 @@ export async function translateImpl(
     text,
     source,
     target
-  ).catch(() => translateGoogle(text, "auto", "en"));
+  ).catch(err => {
+    logger.error(err, "DeepL error, falling back to Google Translate");
+    return translateGoogle(text, "auto", "en");
+  });
 
   if (translatedText.trim() === text.trim() && model === "deepl") {
     const result = await translateGoogle(text, "auto", "en");

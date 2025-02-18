@@ -17,6 +17,7 @@ import {
 } from "../../utils/functions";
 import { lensOcr } from "../../utils/lens";
 import type { OCRResult } from "../../types/ocr";
+import { logger } from "../../utils/logger";
 
 export function buildOcrPayload(
   text: string,
@@ -85,7 +86,10 @@ export async function ocrImpl(url: string) {
     .toBuffer();
 
   const result = await lensOcr(compressed)
-    .catch(() => yandexOcr(compressed, type.mime))
+    .catch(err => {
+      logger.error(err, "Google Lens error, falling back to Yandex");
+      return yandexOcr(compressed, type.mime);
+    })
     .catch(() => abort("Failed to OCR the image"));
 
   if (!result.text) {
