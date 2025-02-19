@@ -52,6 +52,10 @@ export class ArtemisClient extends Client {
     Promise.all([this.loadCommands(), this.registerEvents()]);
   }
 
+  async getOwner() {
+    return this.users.fetch(this.ownerId);
+  }
+
   async loadCommands() {
     const commandsDir = path.join(import.meta.dir, "commands");
     const categories = await fs

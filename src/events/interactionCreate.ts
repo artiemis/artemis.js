@@ -12,7 +12,7 @@ import {
 import { client } from "../client";
 import { logger } from "../utils/logger";
 import { defineEvent } from ".";
-import { isExplicitCommandError, notifyError } from "../utils/error";
+import { isExplicitCommandError, sendErrorAlert } from "../utils/error";
 import { nanoid } from "../utils/functions";
 import type { Command } from "../types/command";
 
@@ -75,7 +75,7 @@ async function handleChatInputCommand(
       const trace = nanoid();
       content += `\ntrace: ${inlineCode(trace)}`;
       logger.error({ trace, err });
-      notifyError(err, trace);
+      sendErrorAlert(err, trace);
     }
 
     await interaction[

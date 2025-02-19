@@ -6,7 +6,7 @@ import {
 } from "discord.js";
 import { defineCommand } from "..";
 import { downloadFile } from "../../utils/http";
-import { abort, notifyError } from "../../utils/error";
+import { abort, sendErrorAlert } from "../../utils/error";
 import { yandexOcr } from "../../utils/yandex";
 import sharp from "sharp";
 import {
@@ -88,7 +88,7 @@ export async function ocrImpl(url: string) {
   const result = await lensOcr(compressed)
     .catch(err => {
       logger.error(err, "Google Lens error, falling back to Yandex");
-      notifyError(err);
+      sendErrorAlert(err);
       return yandexOcr(compressed, type.mime);
     })
     .catch(() => abort("Failed to OCR the image"));
