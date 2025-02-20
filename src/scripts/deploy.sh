@@ -1,4 +1,4 @@
-ssh shironeko "
+ssh lia "
 set -e
 cd artemis.js
 git pull
