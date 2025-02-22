@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: journald
+      options:
+        tag: artemis
+    volumes:
+      - ./data/temp:/app/data/temp
+    environment:
+      - NODE_ENV=production
