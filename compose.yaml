@@ -1,5 +1,6 @@
 services:
-  app:
+  artemis:
+    container_name: artemis
     build: .
     restart: unless-stopped
     network_mode: host
