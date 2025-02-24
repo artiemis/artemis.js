@@ -9,7 +9,7 @@ import { FAKE_USER_AGENT } from "../../utils/constants";
 export default defineCommand({
   data: new SlashCommandBuilder()
     .setName("isdown")
-    .setDescription("URL healthcheck")
+    .setDescription("URL healthcheck (isup)")
     .addStringOption(option =>
       option.setName("url").setDescription("The URL to check").setRequired(true)
     ),
