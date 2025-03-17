@@ -2,7 +2,14 @@ import * as cheerio from "cheerio";
 import { execa } from "execa";
 import { customAlphabet } from "nanoid";
 import { URL_REGEX } from "./constants";
-import { Message, type ChatInputCommandInteraction } from "discord.js";
+import {
+  ChannelType,
+  Message,
+  MessageContextMenuCommandInteraction,
+  MessageFlags,
+  ModalSubmitInteraction,
+  type ChatInputCommandInteraction,
+} from "discord.js";
 import { abort } from "./error";
 
 export const nanoid = customAlphabet("1234567890abcdef");
@@ -104,4 +111,22 @@ export function languageCodeToName(code: string) {
   } catch {
     return undefined;
   }
+}
+
+// deferReply helper with flag heuristics
+export async function defer(
+  interaction:
+    | MessageContextMenuCommandInteraction
+    | ModalSubmitInteraction
+    | ChatInputCommandInteraction
+) {
+  const isDMBased = interaction.channel?.isDMBased();
+  const isBotDM =
+    isDMBased &&
+    interaction.channel.type === ChannelType.DM &&
+    interaction.channel.recipientId === interaction.client.user.id;
+
+  await interaction.deferReply({
+    flags: isDMBased && !isBotDM ? MessageFlags.Ephemeral : undefined,
+  });
 }

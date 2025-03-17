@@ -11,6 +11,7 @@ import { defineCommand } from "..";
 import { abort } from "../../utils/error";
 import { translateImpl } from "./translate";
 import { findFuzzyLanguage } from "../../utils/deepl";
+import { defer } from "../../utils/functions";
 
 export function buildTranslateModal() {
   return new ModalBuilder()
@@ -58,7 +59,7 @@ export default defineCommand({
         time: 60000 * 5,
       })
       .then(async interaction => {
-        await interaction.deferReply();
+        await defer(interaction);
 
         const sourceField =
           interaction.fields.getTextInputValue("source") || "auto";

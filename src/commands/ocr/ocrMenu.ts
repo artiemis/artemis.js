@@ -1,7 +1,7 @@
 import { ApplicationCommandType, ContextMenuCommandBuilder } from "discord.js";
 import { defineCommand } from "..";
 import { buildOcrPayload, ocrImpl } from "./ocr";
-import { getImageUrlFromMessage } from "../../utils/functions";
+import { defer, getImageUrlFromMessage } from "../../utils/functions";
 
 export default defineCommand({
   data: new ContextMenuCommandBuilder()
@@ -13,7 +13,7 @@ export default defineCommand({
 
     const imageUrl = getImageUrlFromMessage(interaction.targetMessage);
 
-    await interaction.deferReply();
+    await defer(interaction);
 
     const { text, language, model } = await ocrImpl(imageUrl);
     const payload = buildOcrPayload(text, language, model);

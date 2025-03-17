@@ -5,7 +5,7 @@ import { ocrImpl } from "./ocr";
 import { buildTranslateModal } from "../language/translateMenu";
 import { abort } from "../../utils/error";
 import { findFuzzyLanguage } from "../../utils/deepl";
-import { getImageUrlFromMessage } from "../../utils/functions";
+import { defer, getImageUrlFromMessage } from "../../utils/functions";
 
 export default defineCommand({
   data: new ContextMenuCommandBuilder()
@@ -26,7 +26,7 @@ export default defineCommand({
         time: 60000 * 5,
       })
       .then(async interaction => {
-        await interaction.deferReply();
+        await defer(interaction);
 
         const sourceField =
           interaction.fields.getTextInputValue("source") || null;

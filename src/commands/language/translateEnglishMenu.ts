@@ -2,6 +2,7 @@ import { ApplicationCommandType, ContextMenuCommandBuilder } from "discord.js";
 import { defineCommand } from "..";
 import { translateImpl } from "./translate";
 import { abort } from "../../utils/error";
+import { defer } from "../../utils/functions";
 
 export default defineCommand({
   data: new ContextMenuCommandBuilder()
@@ -14,7 +15,7 @@ export default defineCommand({
     const text = interaction.targetMessage.content;
     if (!text) abort("No text to translate");
 
-    await interaction.deferReply();
+    await defer(interaction);
 
     const payload = await translateImpl(text, null, "en-US");
     await interaction.editReply(payload);
