@@ -52,7 +52,7 @@ export async function translateImpl(
     target
   ).catch(err => {
     logger.error(err, "DeepL error, falling back to Google Translate");
-    sendErrorAlert(err);
+    sendErrorAlert(err, { source, target, ocrModel });
     return translateGoogle(text, "auto", "en");
   });
 

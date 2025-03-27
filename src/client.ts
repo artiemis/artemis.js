@@ -5,7 +5,9 @@ import {
   Collection,
   GatewayIntentBits,
   InteractionContextType,
+  lazy,
   Partials,
+  TextChannel,
 } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { env } from "./env";
@@ -55,6 +57,19 @@ export class ArtemisClient extends Client {
   async getOwner() {
     return this.users.fetch(this.ownerId);
   }
+
+  getDevWebhook = lazy(async () => {
+    const channel = (await client.channels.fetch(
+      env.DEV_CHANNEL_ID
+    )) as TextChannel;
+    return channel
+      .fetchWebhooks()
+      .then(
+        webhooks =>
+          webhooks.find(wh => wh.applicationId === env.APPLICATION_ID) ??
+          channel.createWebhook({ name: "artemis" })
+      );
+  });
 
   async loadCommands() {
     const commandsDir = path.join(import.meta.dir, "commands");

@@ -88,7 +88,7 @@ export async function ocrImpl(url: string) {
   const result = await lensOcr(compressed)
     .catch(err => {
       logger.error(err, "Google Lens error, falling back to Yandex");
-      sendErrorAlert(err);
+      sendErrorAlert(err, { mime: type.mime });
       return yandexOcr(compressed, type.mime);
     })
     .catch(() => abort("Failed to OCR the image"));
