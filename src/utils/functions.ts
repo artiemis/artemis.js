@@ -9,6 +9,7 @@ import {
   MessageFlags,
   ModalSubmitInteraction,
   type ChatInputCommandInteraction,
+  type MessageSnapshot,
 } from "discord.js";
 import { abort } from "./error";
 
@@ -94,15 +95,28 @@ export function getImageUrlFromChatInteraction(
 }
 
 export function getImageUrlFromMessage(message: Message): string {
-  const attachment = message.attachments.first();
+  function extractImageUrl(message: Message | MessageSnapshot) {
+    const attachment = message.attachments.first();
 
-  return (
-    (attachment?.contentType?.startsWith("image/") && attachment.url) ||
-    message.embeds[0]?.image?.url ||
-    message.embeds[0]?.thumbnail?.url ||
-    findFirstUrl(message.content) ||
-    abort("No valid image found!")
-  );
+    return (
+      (attachment?.contentType?.startsWith("image/") && attachment.url) ||
+      message.embeds[0]?.image?.url ||
+      message.embeds[0]?.thumbnail?.url ||
+      findFirstUrl(message.content)
+    );
+  }
+
+  if (message.messageSnapshots) {
+    const snapshot = message.messageSnapshots.first();
+    if (snapshot) {
+      const url = extractImageUrl(snapshot);
+      if (url) return url;
+    }
+  }
+
+  console.log("no reference url xddd");
+
+  return extractImageUrl(message) || abort("No valid image found!");
 }
 
 export function languageCodeToName(code: string) {
