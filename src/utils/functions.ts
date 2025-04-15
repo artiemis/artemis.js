@@ -114,8 +114,6 @@ export function getImageUrlFromMessage(message: Message): string {
     }
   }
 
-  console.log("no reference url xddd");
-
   return extractImageUrl(message) || abort("No valid image found!");
 }
 
